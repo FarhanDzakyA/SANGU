@@ -4,6 +4,7 @@
 
     $query_table = mysqli_query($mysqli, "SELECT * FROM `dompet`");
     $number = 1;
+    $id=$_SESSION['id_pengguna'];
 ?>
 
 <!DOCTYPE html>
@@ -162,16 +163,17 @@
                             </h5>
                         </div>
                         <div class="card-body">
-                            <form action="" method="POST">
+                            <form action="ExeFiles/add-dompet.php" method="POST">
                                 <div class="form-group">
                                     <label for="">Nama Dompet <i class="fas fa-star-of-life" style="font-size: 7px; vertical-align: top; color: #ED2939"></i></label>
-                                    <input type="text" class="form-control" placeholder="Masukkan nama dompet Anda..." required>
+                                    <input type="text" name="nama" class="form-control" placeholder="Masukkan nama dompet Anda..." required>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="">Saldo Awal <i class="fas fa-star-of-life" style="font-size: 7px; vertical-align: top; color: #ED2939"></i></label>
-                                    <input type="text" class="form-control" placeholder="Masukkan saldo awal dompet Anda..." required>
+                                    <input type="text" name="saldo" class="form-control" placeholder="Masukkan saldo awal dompet Anda..." required>
                                 </div>
+                                <input type="hidden" name="username" value="<?= $id;?>">
 
                                 <div class="d-sm-flex align-items-center justify-content-start">
                                     <button type="submit" name="btn-simpan" class="btn btn-primary">Simpan</button>
