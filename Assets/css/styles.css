@@ -1,0 +1,19 @@
+.brand-image {
+    background: url(../img/BrandLogo.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100%
+}
+
+.bg-custome {
+    background-color: #0071bd !important;
+}
+
+.wrapper-login {
+    height: 110px;
+}
+
+.wrapper-register {
+    min-height: 75px;
+    max-height: 135px;
+}
