@@ -1,10 +1,42 @@
 <?php
-    session_start();
-    include "ExeFiles/koneksi.php";
+session_start();
+include "ExeFiles/koneksi.php";
 
-    $query_table = mysqli_query($mysqli, "SELECT * FROM `dompet`");
-    $number = 1;
-    $id=$_SESSION['id_pengguna'];
+
+$query_table = mysqli_query($mysqli, "SELECT * FROM `dompet`");
+$number = 1;
+$id = $_SESSION['id_pengguna'];
+
+if (isset($_POST['btn-simpan'])) {
+    $nama = $_POST['nama'];
+    $saldo = $_POST['saldo'];
+    $username = $_POST['username'];
+    $quer = "INSERT INTO `dompet`(`nama_dompet`, `saldo`, `id_pengguna`) VALUES ('$nama','$saldo','$id')";
+
+    if ($mysqli->query($quer) === TRUE) {
+        echo "<script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: 'Data dompet berhasil ditambahkan.',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'dompet-page.php';
+                    }
+                });
+              </script>";
+    } else {
+        echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Terjadi kesalahan saat menambahkan data dompet.',
+                    footer: '<a href=\"#\">Why do I have this issue?</a>'
+                });
+              </script>";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -15,18 +47,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-
     <title>SANGU - Tambah Dompet</title>
-
     <link rel="icon" href="Assets/img/favicon.ico">
-
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    <!-- Custom styles for this template-->
     <link href="Assets/css/sb-admin-2.min.css" rel="stylesheet">
     <link href="Assets/css/styles.css" rel="stylesheet">
+    
 </head>
 <body id="page-top">
     <!-- Wrapper -->
@@ -163,7 +190,7 @@
                             </h5>
                         </div>
                         <div class="card-body">
-                            <form action="ExeFiles/add-dompet.php" method="POST">
+                            <form action="" method="POST">
                                 <div class="form-group">
                                     <label for="">Nama Dompet <i class="fas fa-star-of-life" style="font-size: 7px; vertical-align: top; color: #ED2939"></i></label>
                                     <input type="text" name="nama" class="form-control" placeholder="Masukkan nama dompet Anda..." required>
@@ -173,7 +200,7 @@
                                     <label for="">Saldo Awal <i class="fas fa-star-of-life" style="font-size: 7px; vertical-align: top; color: #ED2939"></i></label>
                                     <input type="text" name="saldo" class="form-control" placeholder="Masukkan saldo awal dompet Anda..." required>
                                 </div>
-                                <input type="hidden" name="username" value="<?= $id;?>">
+                                <input type="hidden" name="username" value="<?= $id; ?>">
 
                                 <div class="d-sm-flex align-items-center justify-content-start">
                                     <button type="submit" name="btn-simpan" class="btn btn-primary">Simpan</button>
@@ -235,5 +262,6 @@
 
     <!-- Custom scripts for all pages-->
     <script src="Assets/js/sb-admin-2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>
