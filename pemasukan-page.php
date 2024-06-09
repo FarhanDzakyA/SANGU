@@ -153,7 +153,7 @@
                                 <h5 class="m-0 font-weight-bold text-primary">
                                     Data Pemasukan
                                 </h5>
-                                <a class="d-none d-sm-inline-block btn btn-sm btn-primary rounded-pill shadow-sm" href="">
+                                <a class="d-none d-sm-inline-block btn btn-sm btn-primary rounded-pill shadow-sm" href="tambah-pemasukan.php">
                                     <i class="fas fa-plus fa-sm text-white-100 mr-2"></i>
                                     Tambah Data
                                 </a>
