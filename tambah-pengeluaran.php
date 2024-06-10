@@ -7,6 +7,41 @@ $number = 1;
 $id = $_SESSION['id_pengguna'];
 $query_dompet = "SELECT * FROM `dompet` WHERE id_pengguna = '$id'";
 $result = $mysqli->query($query_dompet);
+$query_kategori = "SELECT * FROM `kategori` WHERE tipe_kategori = 'Pengeluaran'";
+$result2 = $mysqli->query($query_kategori);
+
+if (isset($_POST['btn-simpan'])) {
+    $deskripsi = $_POST['deskripsi'];
+    $saldo = $_POST['saldo'];
+    $username=$_POST['username'];
+    $tgl = $_POST['date'];
+    $kategori = $_POST['kategori'];
+    $dompet = $_POST['dompet'];
+    $quer = "INSERT INTO `pengeluaran`( `tanggal_pengeluaran`, `kategori_pengeluaran`, `deskripsi_pengeluaran`, `jumlah_pengeluaran`, `id_pengguna`, `id_dompet`) VALUES ('$tgl','$kategori','$deskripsi','$saldo','$username','$dompet')";
+    if ($mysqli->query($quer) === TRUE) {
+        echo "<script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: 'Data dompet berhasil ditambahkan.',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'dompet-page.php';
+                    }
+                });
+              </script>";
+    } else {
+        echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Terjadi kesalahan saat menambahkan data dompet.',
+                    footer: '<a href=\"#\">Why do I have this issue?</a>'
+                });
+              </script>";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -159,7 +194,7 @@ $result = $mysqli->query($query_dompet);
                                 <!-- description  -->
                                 <div class="form-group">
                                     <label for="description">Deskripsi <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
-                                    <input type="text" name="nama" class="form-control" placeholder="Masukkan Deskripsi Pengeluaran ..." required>
+                                    <input type="text" name="deskripsi" class="form-control" placeholder="Masukkan Deskripsi Pengeluaran ..." required>
                                 </div>
                                 <!-- jumlah -->
                                 <div class="form-group">
@@ -183,21 +218,14 @@ $result = $mysqli->query($query_dompet);
                                 <!-- kategori -->
                                 <div class="form-group">
                                     <label for="kategori">Kategori</label>
-                                    <select name="kategori" id="income_type" class="form-select form-control">
+                                    <select name="kategori" class="form-select form-control">
                                         <option selected disabled>Pilih Kategori</option>
-                                        <option value="Bonus">Tagihan</option>
-                                        <option value="Dividen">Pendidikan</option>
-                                        <option value="Investasi">Makanan</option>
-                                        <option value="Gaji">Kesehatan</option>
-                                        <option value="Tip">Belanja</option>
-                                        <option value="Transportasi">Transportasi</option>
-                                        <option value="Lainnya">Lainnya</option>
+                                        <?php if ($result2->num_rows > 0):?>
+                                            <?php while ($row = $result2->fetch_assoc()):?>
+                                                <option value="<?= $row['id_kategori']?>"><?= $row['nama_kategori']?></option>
+                                            <?php endwhile;?>
+                                        <?php endif;?>
                                     </select>
-                                </div>
-
-                                <div id="other_income_section" class="form-group" style="display:none;">
-                                    <label for="other_income">Kategori lainnya:</label>
-                                    <input type="text" class="form-control" id="other_income" name="other_income">
                                 </div>
 
                                 <div class="d-flex justify-content-between">
