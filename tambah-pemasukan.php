@@ -7,6 +7,8 @@ $number = 1;
 $id = $_SESSION['id_pengguna'];
 $query_dompet = "SELECT * FROM `dompet` WHERE id_pengguna = '$id'";
 $result = $mysqli->query($query_dompet);
+$query_kategori = "SELECT * FROM `kategori` WHERE tipe_kategori = 'Pemasukan'";
+$result2 = $mysqli->query($query_kategori);
 ?>
 
 <!DOCTYPE html>
@@ -154,20 +156,22 @@ $result = $mysqli->query($query_dompet);
                         </div>
                         <div class="card-body">
                             <form action="" method="POST" class="form-container">
-                                <input type="hidden" name="date" value="<?=$id;?>">
+                                <!-- date -->
+                                <input type="hidden" name="date" value="<?= date('Y-m-d'); ?>">
                                 
+                                <!-- description -->
                                 <div class="form-group">
                                     <label for="description">Deskripsi <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
                                     <input type="text" name="nama" class="form-control" placeholder="Masukkan deskripsi pemasukan ..." required>
                                 </div>
-
+                                <!-- amount -->
                                 <div class="form-group">
                                     <label for="amount">Jumlah Pemasukan <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
                                     <input type="text" name="saldo" class="form-control" placeholder="Masukkan jumlah pemasukan" required>
                                 </div>
-                                
+                                <!-- username -->
                                 <input type="hidden" name="username" value="<?= $id; ?>">
-
+                                <!-- dompet -->
                                 <div class="form-group">
                                     <label for="dompet">Dompet</label>
                                     <select name="dompet" class="form-select form-control">
@@ -179,25 +183,19 @@ $result = $mysqli->query($query_dompet);
                                         <?php endif;?>
                                     </select>
                                 </div>
-
+                                <!-- kategori -->
                                 <div class="form-group">
                                     <label for="kategori">Kategori</label>
-                                    <select name="kategori" id="income_type" class="form-select form-control">
+                                    <select name="kategori" class="form-select form-control">
                                         <option selected disabled>Pilih Kategori</option>
-                                        <option value="Bonus">Bonus</option>
-                                        <option value="Dividen">Dividen</option>
-                                        <option value="Investasi">Investasi</option>
-                                        <option value="Gaji">Gaji</option>
-                                        <option value="Tip">Tip</option>
-                                        <option value="Lainnya">Lainnya</option>
+                                        <?php if ($result2->num_rows > 0):?>
+                                            <?php while ($row = $result2->fetch_assoc()):?>
+                                                <option value="<?= $row['id_kategori']?>"><?= $row['nama_kategori']?></option>
+                                            <?php endwhile;?>
+                                        <?php endif;?>
                                     </select>
                                 </div>
-
-                                <div id="other_income_section" class="form-group" style="display:none;">
-                                    <label for="other_income">Jenis pendapatan lainnya:</label>
-                                    <input type="text" class="form-control" id="other_income" name="other_income">
-                                </div>
-
+                                <!-- tombol -->
                                 <div class="d-flex justify-content-between">
                                     <button type="submit" name="btn-simpan" class="btn btn-primary">Simpan</button>
                                     <a href="dompet-page.php" class="btn btn-secondary">Batalkan</a>
