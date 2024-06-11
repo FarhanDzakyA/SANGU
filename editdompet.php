@@ -1,5 +1,9 @@
 <?php
     session_start();
+    include "ExeFiles/koneksi.php";
+
+    $query_select = mysqli_query($mysqli, "SELECT * FROM `dompet` WHERE `id_dompet` = '$_GET[update]'");
+    $result = mysqli_fetch_assoc($query_select);
 ?>
 
 <!DOCTYPE html>
@@ -11,17 +15,17 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
 
-    <title>SANGU - Dashboard</title>
+    <title>SANGU - Edit Dompet</title>
 
     <link rel="icon" href="Assets/img/favicon.ico">
 
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    <!-- Custom styles for this template-->
     <link href="Assets/css/sb-admin-2.min.css" rel="stylesheet">
     <link href="Assets/css/styles.css" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body id="page-top">
     <!-- Wrapper -->
@@ -39,7 +43,7 @@
             <hr class="sidebar-divider my-0">
 
             <!-- Dashboard -->
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="dashboard.php">
                     <i class="fa-solid fa-fw fa-house"></i>
                     <span>Dashboard</span>
@@ -77,7 +81,7 @@
             </div>
 
             <!-- Dompet -->
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link" href="dompet-page.php">
                     <i class="fa-solid fa-fw fa-wallet"></i>
                     <span>Dompet</span>
@@ -112,10 +116,19 @@
                     </form>
 
                     <!-- Current Page Indication -->
-                    <a class="nav-link d-flex align-items-center" href="dashboard.php">
-                        <i class="fa-solid fa-fw fa-house mr-2" style="color: #6e707e"></i>
-                        <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Dashboard</h4>
-                    </a>
+                     <div class="d-flex align-items-center">
+                         <a class="nav-link d-flex align-items-center" href="dompet-page.php">
+                             <i class="fa-solid fa-fw fa-wallet mr-2" style="color: #6e707e"></i>
+                             <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Dompet</h4>
+                         </a>
+
+                         <i class="fa-solid fa-fw fa-angle-right" style="color: #6e707e"></i>
+
+                         <a class="nav-link d-flex align-items-center" href="editdompet.php">
+                             <i class="fa-solid fa-fw fa-pen mr-2" style="color: #6e707e"></i>
+                             <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Edit Dompet</h4>
+                         </a>
+                     </div>
 
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item dropdown">
@@ -138,126 +151,71 @@
                 
                 <div class="container-fluid">
                     <!-- Page Heading -->
-                    <h3 class="h3 mb-4 text-gray-800">Dashboard</h3>
+                    <h3 class="h3 mb-4 text-gray-800">Edit Data Dompet</h3>
 
-                    <!-- Illustrations -->
+                    <!-- Form Card -->
                     <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h5 class="m-0 font-weight-bold text-primary">
+                                Edit Data Dompet
+                            </h5>
+                        </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-12 col-md-3">
-                                    <div class="text-center">
-                                        <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" src="Assets/img/HeroImage.png">
-                                    </div>
+                            <form action="" method="POST">
+                                <div class="form-group">
+                                    <label for="nama_dompet">Nama Dompet <i class="fas fa-star-of-life" style="font-size: 7px; vertical-align: top; color: #ED2939"></i></label>
+                                    <input type="text" id="nama_dompet" name="nama_dompet" class="form-control" placeholder="Masukkan nama dompet Anda..." value="<?= $result['nama_dompet'] ?>" required>
                                 </div>
-                                <div class="col-12 col-md-9">
-                                    <h3 class="pt-3 text-primary">
-                                        Selamat Datang <b><?= $_SESSION['username']; ?></b> di <b>SANGU</b>!
-                                    </h3>
-                                    <p class="mb-3">SANGU adalah web dompet digital yang membantu Anda mengelola keuangan dan merencanakan tabungan dengan mudah dan efisien. Pantau pengeluaran, atur anggaran, dan capai tujuan finansial Anda dengan SANGU!</p>
-                                    <div class="d-flex align-items-center">
-                                        <a class="btn btn-success rounded-pill mr-3" href="tambahpemasukan.php">
-                                            <i class="fa-solid fa-plus text-white-100 mr-1"></i>
-                                            Pemasukan
-                                        </a>
 
-                                        <a class="btn btn-warning rounded-pill" href="tambahpengeluaran">
-                                            <i class="fa-solid fa-plus text-white-100 mr-1"></i>
-                                            Pengeluaran
-                                        </a>
-                                    </div>
+                                <div class="form-group">
+                                    <label for="saldo">Saldo Awal <i class="fas fa-star-of-life" style="font-size: 7px; vertical-align: top; color: #ED2939"></i></label>
+                                    <input type="text" id="saldo" name="saldo" class="form-control" placeholder="Masukkan saldo awal dompet Anda..." onkeyup="formatRupiah(this)" value="<?= $result['saldo'] ?>" required>
                                 </div>
-                            </div>
+
+                                <div class="d-sm-flex align-items-center justify-content-start">
+                                    <button type="submit" name="btn-simpan" class="btn btn-primary">Simpan</button>
+                                    <span class="mr-2"></span>
+                                    <a href="dompet-page.php" class="btn btn-secondary">Batalkan</a>
+                                </div>
+                            </form>
+
+                            <?php
+                                if (isset($_POST['btn-simpan'])) {
+                                    $id_dompet = $result['id_dompet'];
+                                    $nama = mysqli_real_escape_string($mysqli, $_POST['nama_dompet']);
+
+                                    $saldo = mysqli_real_escape_string($mysqli, $_POST['saldo']);
+                                    $saldo = str_replace('Rp', '', $saldo);
+                                    $saldo = str_replace('.', '', $saldo);
+                                    $saldo = (int)$saldo;
+
+                                    $query_update = mysqli_query($mysqli, "UPDATE `dompet` SET 
+                                    `nama_dompet`='$nama',
+                                    `saldo`='$saldo' 
+                                    WHERE `id_dompet`='$id_dompet'");
+                                
+                                    if($query_update) {
+                                        ?>
+
+                                        <script>
+                                            Swal.fire({
+                                                title: "Berhasil!",
+                                                text: "Data Dompet Berhasil Diubah!",
+                                                icon: "success"
+                                            }).then(function() {
+                                                window.location.href = 'dompet-page.php';
+                                            });
+                                        </script>
+
+                                        <?php
+                                    } else {
+                                        echo "Error: " . $query_update . "<br>" . mysqli_error($mysqli);
+                                    }
+                                }
+                            ?>
+
                         </div>
                     </div>
-                    <!-- End of Illustrations -->
-
-                    <!-- Information Card -->
-                    <div class="row">
-                        <!-- First Card -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                Pemasukan Terbesar
-                                            </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                Rp 3.000.000
-                                            </div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fa-solid fa-money-check-dollar fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Second Card -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-success shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                Pengeluaran Terbesar
-                                            </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                Rp 250.000.000
-                                            </div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fa-solid fa-money-bill-transfer fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Third Card -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-info shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                                Jumlah Dompet
-                                            </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                4
-                                            </div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fa-solid fa-wallet fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Fourth Card -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-warning shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                Tabungan (On Progress)
-                                            </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                3
-                                            </div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fa-solid fa-piggy-bank fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End of Information Card -->
                 </div>
                 <!-- End of Container -->
             </div>
@@ -310,5 +268,24 @@
 
     <!-- Custom scripts for all pages-->
     <script src="Assets/js/sb-admin-2.min.js"></script>
+
+    <script>
+        function formatRupiah(input) {
+            let value = input.value.replace(/[^\d]/g, '');
+
+            if (value === '' || isNaN(parseInt(value))) {
+                value = 0;
+            } else {
+                value = parseInt(value);
+            }
+
+            value = 'Rp ' + formatNumber(parseInt(value));
+            input.value = value;
+        }
+
+        function formatNumber(number) {
+            return number.toLocaleString('id-ID');
+        }
+    </script>
 </body>
 </html>

@@ -1,42 +1,6 @@
 <?php
-session_start();
-include "ExeFiles/koneksi.php";
-
-
-$query_table = mysqli_query($mysqli, "SELECT * FROM `dompet`");
-$number = 1;
-$id = $_SESSION['id_pengguna'];
-
-if (isset($_POST['btn-simpan'])) {
-    $nama = $_POST['nama'];
-    $saldo = $_POST['saldo'];
-    $username = $_POST['username'];
-    $quer = "INSERT INTO `dompet`(`nama_dompet`, `saldo`, `id_pengguna`) VALUES ('$nama','$saldo','$id')";
-
-    if ($mysqli->query($quer) === TRUE) {
-        echo "<script>
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Data dompet berhasil ditambahkan.',
-                    confirmButtonText: 'OK'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = 'dompet-page.php';
-                    }
-                });
-              </script>";
-    } else {
-        echo "<script>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Terjadi kesalahan saat menambahkan data dompet.',
-                    footer: '<a href=\"#\">Why do I have this issue?</a>'
-                });
-              </script>";
-    }
-}
+    session_start();
+    include "ExeFiles/koneksi.php";
 ?>
 
 <!DOCTYPE html>
@@ -47,13 +11,18 @@ if (isset($_POST['btn-simpan'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
+
     <title>SANGU - Tambah Dompet</title>
+
     <link rel="icon" href="Assets/img/favicon.ico">
+
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="Assets/css/sb-admin-2.min.css" rel="stylesheet">
     <link href="Assets/css/styles.css" rel="stylesheet">
     
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body id="page-top">
     <!-- Wrapper -->
@@ -118,7 +87,7 @@ if (isset($_POST['btn-simpan'])) {
 
             <!-- Tabungan Berencana -->
             <li class="nav-item">
-                <a class="nav-link" href="">
+                <a class="nav-link" href="tabunganberencana-page.php">
                     <i class="fa-solid fa-fw fa-piggy-bank"></i>
                     <span>Tabungan Berencana</span>
                 </a>
@@ -159,12 +128,11 @@ if (isset($_POST['btn-simpan'])) {
                      </div>
 
                     <ul class="navbar-nav ml-auto">
-                        <li class="nav-item dropdown no-arrow">
+                        <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-dark small">
+                                <span class="mr-2 d-none d-lg-inline text-dark font-weight-bold">
                                     <?= $_SESSION['username']; ?>
                                 </span>
-                                <img class="img-profile rounded-circle" src="Assets/img/profile-img.png">
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in">
@@ -182,7 +150,7 @@ if (isset($_POST['btn-simpan'])) {
                     <!-- Page Heading -->
                     <h3 class="h3 mb-4 text-gray-800">Tambah Data Dompet</h3>
 
-                    <!-- Tabel Card -->
+                    <!-- Form Card -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
                             <h5 class="m-0 font-weight-bold text-primary">
@@ -192,15 +160,14 @@ if (isset($_POST['btn-simpan'])) {
                         <div class="card-body">
                             <form action="" method="POST">
                                 <div class="form-group">
-                                    <label for="">Nama Dompet <i class="fas fa-star-of-life" style="font-size: 7px; vertical-align: top; color: #ED2939"></i></label>
-                                    <input type="text" name="nama" class="form-control" placeholder="Masukkan nama dompet Anda..." required>
+                                    <label for="nama_dompet">Nama Dompet <i class="fas fa-star-of-life" style="font-size: 7px; vertical-align: top; color: #ED2939"></i></label>
+                                    <input type="text" id="nama_dompet" name="nama_dompet" class="form-control" placeholder="Masukkan nama dompet Anda..." required>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="">Saldo Awal <i class="fas fa-star-of-life" style="font-size: 7px; vertical-align: top; color: #ED2939"></i></label>
-                                    <input type="text" name="saldo" class="form-control" placeholder="Masukkan saldo awal dompet Anda..." required>
+                                    <label for="saldo">Saldo Awal <i class="fas fa-star-of-life" style="font-size: 7px; vertical-align: top; color: #ED2939"></i></label>
+                                    <input type="text" id="saldo" name="saldo" class="form-control" placeholder="Masukkan saldo awal dompet Anda..." onkeyup="formatRupiah(this)" required>
                                 </div>
-                                <input type="hidden" name="username" value="<?= $id; ?>">
 
                                 <div class="d-sm-flex align-items-center justify-content-start">
                                     <button type="submit" name="btn-simpan" class="btn btn-primary">Simpan</button>
@@ -208,6 +175,39 @@ if (isset($_POST['btn-simpan'])) {
                                     <a href="dompet-page.php" class="btn btn-secondary">Batalkan</a>
                                 </div>
                             </form>
+
+                            <?php
+                                if (isset($_POST['btn-simpan'])) {
+                                    $id_pengguna = $_SESSION['id_pengguna'];
+                                    $nama = mysqli_real_escape_string($mysqli, $_POST['nama_dompet']);
+
+                                    $saldo = mysqli_real_escape_string($mysqli, $_POST['saldo']);
+                                    $saldo = str_replace('Rp', '', $saldo);
+                                    $saldo = str_replace('.', '', $saldo);
+                                    $saldo = (int)$saldo;
+
+                                    $query_insert = mysqli_query($mysqli, "INSERT INTO `dompet`(`nama_dompet`, `saldo`, `id_pengguna`) VALUES ('$nama','$saldo','$id_pengguna')");
+                                
+                                    if($query_insert) {
+                                        ?>
+
+                                        <script>
+                                            Swal.fire({
+                                                title: "Berhasil!",
+                                                text: "Data Dompet Berhasil Ditambahkan!",
+                                                icon: "success"
+                                            }).then(function() {
+                                                window.location.href = 'dompet-page.php';
+                                            });
+                                        </script>
+
+                                        <?php
+                                    } else {
+                                        echo "Error: " . $query_insert . "<br>" . mysqli_error($mysqli);
+                                    }
+                                }
+                            ?>
+
                         </div>
                     </div>
                 </div>
@@ -262,6 +262,24 @@ if (isset($_POST['btn-simpan'])) {
 
     <!-- Custom scripts for all pages-->
     <script src="Assets/js/sb-admin-2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function formatRupiah(input) {
+            let value = input.value.replace(/[^\d]/g, '');
+
+            if (value === '' || isNaN(parseInt(value))) {
+                value = 0;
+            } else {
+                value = parseInt(value);
+            }
+
+            value = 'Rp ' + formatNumber(parseInt(value));
+            input.value = value;
+        }
+
+        function formatNumber(number) {
+            return number.toLocaleString('id-ID');
+        }
+    </script>
 </body>
 </html>

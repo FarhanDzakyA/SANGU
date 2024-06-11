@@ -1,9 +1,12 @@
 <?php
-    session_start();
-    include "ExeFiles/koneksi.php";
+session_start();
+include "ExeFiles/koneksi.php";
 
-    $query_table = mysqli_query($mysqli, "SELECT * FROM `pengeluaran`");
-    $number = 1;
+$query_table = mysqli_query($mysqli, "SELECT * FROM `dompet`");
+$number = 1;
+$id = $_SESSION['id_pengguna'];
+$query_dompet = "SELECT * FROM `dompet` WHERE id_pengguna = '$id'";
+$result = $mysqli->query($query_dompet);
 ?>
 
 <!DOCTYPE html>
@@ -14,18 +17,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-
-    <title>SANGU - Pengeluaran</title>
-
+    <title>SANGU - Tambah Dompet</title>
     <link rel="icon" href="Assets/img/favicon.ico">
-
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    <!-- Custom styles for this template-->
     <link href="Assets/css/sb-admin-2.min.css" rel="stylesheet">
-    <link href="Assets/css/dataTables.bootstrap4.min.css" rel="stylesheet">
     <link href="Assets/css/styles.css" rel="stylesheet">
 </head>
 <body id="page-top">
@@ -54,12 +50,10 @@
             <hr class="sidebar-divider">
 
             <!-- Transaksi Heading -->
-            <div class="sidebar-heading">
-                Transaksi
-            </div>
+            <div class="sidebar-heading">Transaksi</div>
 
             <!-- Pemasukan -->
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link" href="pemasukan-page.php">
                     <i class="fa-solid fa-fw fa-money-check-dollar"></i>
                     <span>Pemasukan</span>
@@ -67,7 +61,7 @@
             </li>
 
             <!-- Pengeluaran -->
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="pengeluaran-page.php">
                     <i class="fa-solid fa-fw fa-money-bill-transfer"></i>
                     <span>Pengeluaran</span>
@@ -77,9 +71,7 @@
             <hr class="sidebar-divider">
 
             <!-- Lainnya Heading -->
-            <div class="sidebar-heading">
-                Lainnya
-            </div>
+            <div class="sidebar-heading">Lainnya</div>
 
             <!-- Dompet -->
             <li class="nav-item">
@@ -117,10 +109,19 @@
                     </form>
 
                     <!-- Current Page Indication -->
-                    <a class="nav-link d-flex align-items-center" href="pengeluaran-page.php">
-                        <i class="fa-solid fa-fw fa-money-bill-transfer mr-2" style="color: #6e707e"></i>
-                        <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Pengeluaran</h4>
-                    </a>
+                    <div class="d-flex align-items-center">
+                        <a class="nav-link d-flex align-items-center" href="pemasukan-page.php">
+                            <i class="fa-solid fa-fw fa-money-check-dollar mr-2" style="color: #6e707e"></i>
+                            <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Pemasukan</h4>
+                        </a>
+
+                        <i class="fa-solid fa-fw fa-angle-right" style="color: #6e707e"></i>
+
+                        <a class="nav-link d-flex align-items-center" href="tambah-pemasukan.php">
+                            <i class="fa-solid fa-fw fa-plus mr-2" style="color: #6e707e"></i>
+                            <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Tambah Pemasukan</h4>
+                        </a>
+                    </div>
 
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item dropdown">
@@ -143,59 +144,64 @@
                 
                 <div class="container-fluid">
                     <!-- Page Heading -->
-                    <h3 class="h3 mb-4 text-gray-800">Pengeluaran</h3>
+                    <h3 class="h3 mb-4 text-gray-800">Tambah Pemasukan</h3>
 
-                    <!-- Tabel Card -->
+                    <!-- Form Card -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <div class="d-sm-flex align-items-center justify-content-between">
-                                <h5 class="m-0 font-weight-bold text-primary">
-                                    Data Pengeluaran
-                                </h5>
-                                <a class="d-none d-sm-inline-block btn btn-sm btn-primary rounded-pill shadow-sm" href="">
-                                    <i class="fas fa-plus fa-sm text-white-100 mr-2"></i>
-                                    Tambah Data
-                                </a>
-                            </div>
+                            <h5 class="m-0 font-weight-bold text-primary">Tambah Pemasukan</h5>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-borderless" id="dataTable" width="100%" cellspacing="0">
-                                    <thead class="thead-light">
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Tanggal</th>
-                                            <th>Kategori</th>
-                                            <th>Deskripsi</th>
-                                            <th>Jumlah</th>
-                                            <th>Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php while($result = mysqli_fetch_assoc($query_table)) { ?>
-                                        <tr>
-                                            <td><?= $number ?></td>
-                                            <td><?= $result['tanggal_pengeluaran'] ?></td>
-                                            <td><?= $result['kategori_pengeluaran'] ?></td>
-                                            <td><?= $result['deskripsi_pengeluaran'] ?></td>
-                                            <td><?= $result['jumlah_pengeluaran'] ?></td>
-                                            <td>
-                                                <a href="" class="btn btn-primary btn-circle btn-sm" data-toggle="tooltip" data-placement="top" title="Edit">
-                                                    <i class="fas fa-fw fa-pen"></i>
-                                                </a>
-                                                <span class="mr-1"></span>
-                                                <a href="" class="btn btn-danger btn-circle btn-sm" data-toggle="modal" data-target="#hapusBarang<?= $result['id_barang'] ?>" data-toggle="tooltip" data-placement="top" title="Hapus">
-                                                    <i class="fas fa-fw fa-trash"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <?php
-                                                $number++;
-                                            }
-                                        ?>
-                                    </tbody>
-                                </table>
-                            </div>
+                            <form action="" method="POST" class="form-container">
+                                <input type="hidden" name="date" value="<?=$id;?>">
+                                
+                                <div class="form-group">
+                                    <label for="description">Deskripsi <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
+                                    <input type="text" name="nama" class="form-control" placeholder="Masukkan deskripsi pemasukan ..." required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="amount">Jumlah Pemasukan <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
+                                    <input type="text" name="saldo" class="form-control" placeholder="Masukkan jumlah pemasukan" required>
+                                </div>
+                                
+                                <input type="hidden" name="username" value="<?= $id; ?>">
+
+                                <div class="form-group">
+                                    <label for="dompet">Dompet</label>
+                                    <select name="dompet" class="form-select form-control">
+                                        <option selected disabled>Pilih Dompet</option>
+                                        <?php if ($result->num_rows > 0):?>
+                                            <?php while ($row = $result->fetch_assoc()):?>
+                                                <option value="<?= $row['id_dompet']?>"><?= $row['nama_dompet']?></option>
+                                            <?php endwhile;?>
+                                        <?php endif;?>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="kategori">Kategori</label>
+                                    <select name="kategori" id="income_type" class="form-select form-control">
+                                        <option selected disabled>Pilih Kategori</option>
+                                        <option value="Bonus">Bonus</option>
+                                        <option value="Dividen">Dividen</option>
+                                        <option value="Investasi">Investasi</option>
+                                        <option value="Gaji">Gaji</option>
+                                        <option value="Tip">Tip</option>
+                                        <option value="Lainnya">Lainnya</option>
+                                    </select>
+                                </div>
+
+                                <div id="other_income_section" class="form-group" style="display:none;">
+                                    <label for="other_income">Jenis pendapatan lainnya:</label>
+                                    <input type="text" class="form-control" id="other_income" name="other_income">
+                                </div>
+
+                                <div class="d-flex justify-content-between">
+                                    <button type="submit" name="btn-simpan" class="btn btn-primary">Simpan</button>
+                                    <a href="dompet-page.php" class="btn btn-secondary">Batalkan</a>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -230,13 +236,9 @@
                     <h5 class="modal-title" id="exampleModalLabel">Apakah Anda Yakin ?</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">x</button>
                 </div>
-                <div class="modal-body">
-                    Pilih "Logout" di bawah jika Anda yakin untuk mengakhiri sesi Anda saat ini.
-                </div>
+                <div class="modal-body">Pilih "Logout" di bawah jika Anda yakin untuk mengakhiri sesi Anda saat ini.</div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
-                        Cancel
-                    </button>
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
                     <a class="btn btn-primary" href="login-page.php">Logout</a>
                 </div>
             </div>
@@ -248,17 +250,19 @@
     <script src="Assets/js/jquery.min.js"></script>
     <script src="Assets/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Core plugin JavaScript-->
-    <script src="Assets/js/jquery.easing.min.js"></script>
-
     <!-- Custom scripts for all pages-->
     <script src="Assets/js/sb-admin-2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- Page level plugins -->
-    <script src="Assets/js/jquery.dataTables.min.js"></script>
-    <script src="Assets/js/dataTables.bootstrap4.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="Assets/js/demo/datatables-demo.js"></script>
+    <script>
+        document.getElementById('income_type').addEventListener('change', function () {
+            const otherIncomeSection = document.getElementById('other_income_section');
+            if (this.value === 'Lainnya') {
+                otherIncomeSection.style.display = 'block';
+            } else {
+                otherIncomeSection.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>

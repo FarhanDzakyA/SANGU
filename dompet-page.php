@@ -2,8 +2,13 @@
     session_start();
     include "ExeFiles/koneksi.php";
 
-    $query_table = mysqli_query($mysqli, "SELECT * FROM `dompet`");
+    $id_pengguna = $_SESSION['id_pengguna'];
+    $query_table = mysqli_query($mysqli, "SELECT * FROM `dompet` WHERE `id_pengguna` = '$id_pengguna'");
     $number = 1;
+
+    function rupiahFormat($number) {
+        return 'Rp ' . number_format($number, 0, ',', '.');
+    }
 ?>
 
 <!DOCTYPE html>
@@ -27,6 +32,8 @@
     <link href="Assets/css/sb-admin-2.min.css" rel="stylesheet">
     <link href="Assets/css/dataTables.bootstrap4.min.css" rel="stylesheet">
     <link href="Assets/css/styles.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body id="page-top">
     <!-- Wrapper -->
@@ -123,12 +130,11 @@
                     </a>
 
                     <ul class="navbar-nav ml-auto">
-                        <li class="nav-item dropdown no-arrow">
+                        <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-dark small">
+                                <span class="mr-2 d-none d-lg-inline text-dark font-weight-bold">
                                     <?= $_SESSION['username']; ?>
                                 </span>
-                                <img class="img-profile rounded-circle" src="Assets/img/profile-img.png">
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in">
@@ -175,17 +181,47 @@
                                         <tr>
                                             <td><?= $number ?></td>
                                             <td><?= $result['nama_dompet'] ?></td>
-                                            <td><?= $result['saldo'] ?></td>
+                                            <td data-order="<?= $result['saldo'] ?>"><?= rupiahFormat($result['saldo']) ?></td>
                                             <td>
-                                                <a href="" class="btn btn-primary btn-circle btn-sm" data-toggle="tooltip" data-placement="top" title="Edit">
+                                                <a href="editdompet.php?update=<?= $result['id_dompet'] ?>" class="btn btn-primary btn-circle btn-sm" data-toggle="tooltip" data-placement="top" title="Edit">
                                                     <i class="fas fa-fw fa-pen"></i>
                                                 </a>
                                                 <span class="mr-1"></span>
-                                                <a href="" class="btn btn-danger btn-circle btn-sm" data-toggle="modal" data-target="#hapusBarang<?= $result['id_barang'] ?>" data-toggle="tooltip" data-placement="top" title="Hapus">
+                                                <a href="#" class="btn btn-danger btn-circle btn-sm" data-toggle="modal" data-target="#hapusDompet<?= $result['id_dompet'] ?>" data-toggle="tooltip" data-placement="top" title="Hapus">
                                                     <i class="fas fa-fw fa-trash"></i>
                                                 </a>
                                             </td>
                                         </tr>
+
+                                        <div class="modal fade" id="hapusDompet<?= $result['id_dompet'] ?>" tabindex="-1" role="dialog">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-tittle">Hapus Dompet ?</h5>
+                                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">x</span>
+                                                        </button>
+                                                    </div>
+                                                    <form action="" method="POST">
+                                                        <input type="hidden" name="id_dompet" value="<?= $result['id_dompet'] ?>">
+
+                                                        <div class="modal-body">
+                                                            Apakah Anda yakin ingin menghapus dompet <b><?= $result['nama_dompet'] ?></b> ?
+                                                        </div>
+
+                                                        <div class="modal-footer">
+                                                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                                Cancel
+                                                            </button>
+                                                            <button type="submit" name="btn-hapus" class="btn btn-danger">
+                                                                Ya, Hapus Dompet
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <?php
                                                 $number++;
                                             }
@@ -259,3 +295,29 @@
     <script src="Assets/js/demo/datatables-demo.js"></script>
 </body>
 </html>
+
+<?php
+    if(isset($_POST['btn-hapus'])) {
+        $id_dompet = mysqli_real_escape_string($mysqli, $_POST['id_dompet']);
+
+        $query_delete = mysqli_query($mysqli, "DELETE FROM `dompet` WHERE `id_dompet` = '$id_dompet'");
+
+        if($query_delete) {
+            ?>
+
+            <script>
+                Swal.fire({
+                    title: "Berhasil!",
+                    text: "Data Dompet Berhasil Dihapus!",
+                    icon: "success"
+                }).then(function() {
+                    window.location.href = 'dompet-page.php';
+                });
+            </script>
+
+            <?php
+        } else {
+            echo "Error: " . $query_delete . "<br>" . mysqli_error($mysqli);
+        }
+    }
+?>
