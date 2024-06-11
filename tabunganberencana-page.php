@@ -9,7 +9,6 @@
     function rupiahFormat($number) {
         return 'Rp ' . number_format($number, 0, ',', '.');
     }
-
 ?>
 
 <!DOCTYPE html>
@@ -171,9 +170,12 @@
                                 <?php
                                 $hitung_progress = $result['tertabung']/$result['target'];
                                 $progress_persen = $hitung_progress * 100;
+                                $remaining_amount = $result['target'] - $result['tertabung'];
+                                $modal_id_plus = 'plusModal' . $result['id_rencana'];
+                                $modal_id_minus = 'minusModal' . $result['id_rencana'];
                                 ?>
                                 <div class="col-md-6 col-12 mb-4 mt-3">
-                                    <div class="card  shadow py-1">
+                                    <div class="card shadow py-1">
                                         <div class="card-body">
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col mr-2">
@@ -193,18 +195,61 @@
                                             </div>
                                         </div>
                                         <div class="card-footer">
-                                            <div class="col text-center ">
-                                                <a href="#" class="btn btn-primary btn-circle"><i class="fa-solid fa-plus"></i></a>
-                                                <a href="#" class="btn btn-primary btn-circle"><i class="fa-solid fa-minus"></i></a>
-                                                <a href="#" class="btn btn-warning  btn-circle"><i class="fas fa-fw fa-pen"></i></a>
+                                            <div class="col text-center">
+                                                <a href="#" class="btn btn-primary btn-circle" data-toggle="modal" data-target="#<?=$modal_id_plus;?>"><i class="fa-solid fa-plus"></i></a>
+                                                <a href="#" class="btn btn-primary btn-circle" data-toggle="modal" data-target="#<?=$modal_id_minus;?>"><i class="fa-solid fa-minus"></i></a>
+                                                <a href="#" class="btn btn-warning btn-circle"><i class="fas fa-fw fa-pen"></i></a>
                                                 <a href="#" class="btn btn-danger btn-circle"><i class="fas fa-fw fa-trash"></i></a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                            
+                                <!-- Plus Modal -->
+                                <div class="modal fade" id="<?=$modal_id_plus;?>" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Deposit</h5>
+                                                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- Form for adding amount -->
+                                                <form method="POST" action="">
+                                                    <div class="mb-3">
+                                                        <label for="amountToAdd<?=$result['id_rencana'];?>" class="form-label">Banyak yang akan disimpan</label>
+                                                        <input type="text" class="form-control" id="amountToAdd<?=$result['id_rencana'];?>" name="amountToAdd" onkeyup="formatRupiah(this, <?=$remaining_amount;?>)" data-remaining-amount="<?=$remaining_amount;?>">
+                                                    </div>
+                                                    <input type="hidden" name="id_rencana" value="<?=$result['id_rencana'];?>">
+                                                    <button type="submit" class="btn btn-primary" id="submitPlus<?=$result['id_rencana'];?>" name="btn-depo" disabled>Submit</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- minus modal  -->
+                                 <div class="modal fade" id="<?=$modal_id_minus;?>" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Withdraw</h5>
+                                                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="" method="POST">
+                                                    <div class="mb-3">
+                                                        <label for="amountTolose<?=$result['id_rencana'];?>" class="form-label">Banyak yang akan dikeluarkan</label>
+                                                        <input type="text" class="form-control" id="amountTolose<?=$result['id_rencana'];?>" name="amountTolose" onkeyup="formatRupiahmin(this,<?=$result['tertabung'];?>)" data-remaining-amount="<?=$result['tertabung']?>">
+                                                    </div>
+                                                    <input type="hidden" name="id_rencana" value="<?=$result['id_rencana'];?>">
+                                                    <button type="submit" class="btn btn-primary" id="submitMin<?=$result['id_rencana'];?>" name="btn-wit" disabled>submit</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                 </div>
                                 <?php }?>
                             </div>
-                            
                     </div>
                 </div>
                 <!-- End of Container -->
@@ -268,6 +313,71 @@
 
     <!-- Page level custom scripts -->
     <script src="Assets/js/demo/datatables-demo.js"></script>
+
+    <script>
+        function formatRupiah(input, remainingAmount) {
+            let value = input.value.replace(/[^\d]/g, '');
+            
+            if (value === '' || isNaN(parseInt(value))) {
+                value = 0;
+            } else {
+                value = parseInt(value);
+            }
+
+            value = 'Rp ' + formatNumber(parseInt(value));
+            input.value = value;
+
+            checkAmount(value, remainingAmount, input.id);
+        }
+
+        function formatNumber(number) {
+            return number.toLocaleString('id-ID');
+            }
+            
+            function formatRupiahmin(input, remainingAmount) {
+                let value = input.value.replace(/[^\d]/g, '');
+                
+                if (value === '' || isNaN(parseInt(value))) {
+                    value = 0;
+                } else {
+                    value = parseInt(value);
+                }
+    
+                value = 'Rp ' + formatNumber(parseInt(value));
+                input.value = value;
+    
+                checkAmount2(value, remainingAmount, input.id);
+            }
+    
+            function formatNumber(number) {
+                return number.toLocaleString('id-ID');
+            }
+
+        function checkAmount(value, remainingAmount, inputId) {
+            let numericValue = parseInt(value.replace(/[^\d]/g, ''));
+            let submitButtonId = 'submitPlus' + inputId.replace('amountToAdd', '');
+            let submitButton = document.getElementById(submitButtonId);
+
+            if (numericValue > remainingAmount) {
+                submitButton.disabled = true;
+            } else {
+                submitButton.disabled = false;
+            }
+        }
+
+        function checkAmount2(value, remainingAmount, inputId) {
+            let numericValue = parseInt(value.replace(/[^\d]/g, ''));
+            let submitButtonId = 'submitMin' + inputId.replace('amountTolose', '');
+            let submitButton = document.getElementById(submitButtonId);
+
+            if (numericValue > remainingAmount) {
+                submitButton.disabled = true;
+            } else {
+                submitButton.disabled = false;
+            }
+        }
+
+    </script>
 </body>
 </html>
 
@@ -295,4 +405,67 @@
             echo "Error: " . $query_delete . "<br>" . mysqli_error($mysqli);
         }
     }
+?>
+
+<?php 
+if(isset($_POST["btn-wit"])) {
+    $id_rencana = mysqli_real_escape_string($mysqli, $_POST['id_rencana']);
+    $amountTolose = mysqli_real_escape_string($mysqli, $_POST['amountTolose']);
+    $amountTolose = str_replace('Rp', '', $amountTolose);
+    $amountTolose = str_replace('.', '', $amountTolose);
+    $amountTolose = (int)$amountTolose;
+    $query1 = mysqli_query($mysqli,"SELECT * FROM `rencana` WHERE id_rencana='$id_rencana'");
+    $result = mysqli_fetch_assoc($query1); // changed $query_table to $query1
+    $amounttotal = $result['tertabung'] - $amountTolose;
+
+    $query = mysqli_query($mysqli,"UPDATE `rencana` SET `tertabung`='$amounttotal' WHERE id_rencana = '$id_rencana'");
+    if($query) {
+        ?>
+
+        <script>
+            Swal.fire({
+                title: "Berhasil!",
+                text: "withdraw Berhasil",
+                icon: "success"
+            }).then(function() {
+                window.location.href = 'tabunganberencana-page.php';
+            });
+        </script>
+
+        <?php
+    } else {
+        echo "Error: " . $query . "<br>" . mysqli_error($mysqli);
+    }
+}
+?>
+<?php
+if(isset($_POST['btn-depo'])){
+    $id_rencana = mysqli_real_escape_string($mysqli, $_POST['id_rencana']);
+    $amountToAdd = mysqli_real_escape_string($mysqli, $_POST['amountToAdd']);
+    $amountToAdd = str_replace('Rp', '', $amountToAdd);
+    $amountToAdd = str_replace('.', '', $amountToAdd);
+    $amountToAdd = (int)$amountToAdd;
+    $query1 = mysqli_query($mysqli,"SELECT * FROM `rencana` WHERE id_rencana='$id_rencana'");
+    $result = mysqli_fetch_assoc($query1); // changed $query_table to $query1
+    $amounttotal = $result['tertabung'] + $amountToAdd;
+    $query = mysqli_query($mysqli,"UPDATE `rencana` SET `tertabung`='$amounttotal' WHERE id_rencana = '$id_rencana'");
+    if($query) {
+        ?>
+
+        <script>
+            Swal.fire({
+                title: "Berhasil!",
+                text: "Deposit Berhasil!",
+                icon: "success"
+            }).then(function() {
+                window.location.href = 'tabunganberencana-page.php';
+            });
+        </script>
+
+        <?php
+    } else {
+        echo "Error: " . $query . "<br>" . mysqli_error($mysqli);
+    }
+}
+
 ?>
