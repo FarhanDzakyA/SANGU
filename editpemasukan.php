@@ -3,8 +3,12 @@
     include "ExeFiles/koneksi.php";
 
     $id = $_SESSION['id_pengguna'];
+
+    $query_select = mysqli_query($mysqli, "SELECT * FROM `pemasukan` WHERE `id_pemasukan` = '$_GET[update]'");
     $query_dompet = mysqli_query($mysqli, "SELECT * FROM `dompet` WHERE id_pengguna = '$id'");
     $query_kategori = mysqli_query($mysqli, "SELECT * FROM `kategori` WHERE tipe_kategori = 'Pemasukan'");
+
+    $result = mysqli_fetch_assoc($query_select);
 
     function rupiahFormat($number) {
         return 'Rp ' . number_format($number, 0, ',', '.');
@@ -20,7 +24,7 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
     
-    <title>SANGU - Tambah Pemasukan</title>
+    <title>SANGU - Edit Pemasukan</title>
 
     <link rel="icon" href="Assets/img/favicon.ico">
 
@@ -126,8 +130,8 @@
                         <i class="fa-solid fa-fw fa-angle-right" style="color: #6e707e"></i>
 
                         <a class="nav-link d-flex align-items-center" href="tambah-pemasukan.php">
-                            <i class="fa-solid fa-fw fa-plus mr-2" style="color: #6e707e"></i>
-                            <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Tambah Pemasukan</h4>
+                            <i class="fa-solid fa-fw fa-pen mr-2" style="color: #6e707e"></i>
+                            <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Edit Pemasukan</h4>
                         </a>
                     </div>
 
@@ -152,40 +156,42 @@
                 
                 <div class="container-fluid">
                     <!-- Page Heading -->
-                    <h3 class="h3 mb-4 text-gray-800">Tambah Pemasukan</h3>
+                    <h3 class="h3 mb-4 text-gray-800">Edit Pemasukan</h3>
 
                     <!-- Form Card -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h5 class="m-0 font-weight-bold text-primary">Tambah Pemasukan</h5>
+                            <h5 class="m-0 font-weight-bold text-primary">Edit Pemasukan</h5>
                         </div>
                         <div class="card-body">
                             <form action="" method="POST">
                                 <!-- date -->
                                  <div class="form-group">
                                     <label for="date">Tanggal <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
-                                    <input type="date" id="date" name="date" class="form-control" value="<?= date('Y-m-d'); ?>" max="<?= date('Y-m-d'); ?>" required>
+                                    <input type="date" id="date" name="date" class="form-control" value="<?= $result['tanggal_pemasukan'] ?>" max="<?= date('Y-m-d'); ?>" required>
                                  </div>
                                 
                                 <!-- description -->
                                 <div class="form-group">
                                     <label for="deskripsi">Deskripsi <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
-                                    <input type="text" id="deskripsi" name="deskripsi" class="form-control" placeholder="Masukkan deskripsi pemasukan ..." required>
+                                    <input type="text" id="deskripsi" name="deskripsi" class="form-control" placeholder="Masukkan deskripsi pemasukan ..." value="<?= $result['deskripsi_pemasukan'] ?>" required>
                                 </div>
 
                                 <!-- amount -->
                                 <div class="form-group">
                                     <label for="jumlah">Jumlah Pemasukan <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
-                                    <input type="text" id="jumlah" name="jumlah" class="form-control" placeholder="Masukkan jumlah pemasukan ..." value="Rp " onkeyup="formatRupiah(this)" required>
+                                    <input type="text" id="jumlah" name="jumlah" class="form-control" placeholder="Masukkan jumlah pemasukan ..." value="<?= rupiahFormat($result['jumlah_pemasukan']) ?>" onkeyup="formatRupiah(this)" required>
                                 </div>
                                 
                                 <!-- dompet -->
                                 <div class="form-group">
                                     <label for="dompet">Dompet <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
-                                    <select id="dompet" name="dompet" class="form-select form-control" required>
-                                        <option value="" selected disabled>-- Pilih Dompet --</option>
-                                        <?php while($dompet = mysqli_fetch_assoc($query_dompet)) { ?>
-                                            <option value="<?= $dompet['id_dompet'] ?>"><?= $dompet['nama_dompet'] ?> -- <?= rupiahFormat($dompet['saldo']) ?></option>
+                                    <select id="dompet" name="dompet" class="form-select form-control">
+                                        <option selected disabled>-- Pilih Dompet --</option>
+                                        <?php while($dompet = mysqli_fetch_assoc($query_dompet)) { 
+                                            $selected_dompet = ($dompet['id_dompet'] == $result['id_dompet']) ? 'selected' : '';
+                                            ?>
+                                            <option value="<?= $dompet['id_dompet'] ?>" <?= $selected_dompet ?>><?= $dompet['nama_dompet'] ?> -- <?= rupiahFormat($dompet['saldo']) ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
@@ -193,10 +199,12 @@
                                 <!-- kategori -->
                                 <div class="form-group">
                                     <label for="kategori">Kategori <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
-                                    <select id="kategori" name="kategori" class="form-select form-control" required>
-                                        <option value="" selected disabled>-- Pilih Kategori --</option>
-                                        <?php while($kategori = mysqli_fetch_assoc($query_kategori)) { ?>
-                                            <option value="<?= $kategori['id_kategori'] ?>"><?= $kategori['nama_kategori'] ?></option>
+                                    <select id="kategori" name="kategori" class="form-select form-control">
+                                        <option selected disabled>-- Pilih Kategori --</option>
+                                        <?php while($kategori = mysqli_fetch_assoc($query_kategori)) { 
+                                            $selected_kategori = ($kategori['id_kategori'] == $result['kategori_pemasukan']) ? 'selected' : '';
+                                            ?>
+                                            <option value="<?= $kategori['id_kategori'] ?>" <?= $selected_kategori ?>><?= $kategori['nama_kategori'] ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
@@ -211,7 +219,7 @@
 
                             <?php
                                 if(isset($_POST['btn-simpan'])) {
-                                    $id_pengguna = $_SESSION['id_pengguna'];
+                                    $id_pemasukan = $_GET['update'];
                                     $date = mysqli_real_escape_string($mysqli, $_POST['date']);
                                     $deskripsi = mysqli_real_escape_string($mysqli, $_POST['deskripsi']);
                                     $id_dompet = mysqli_real_escape_string($mysqli, $_POST['dompet']);
@@ -222,18 +230,21 @@
                                     $jumlah = str_replace('.', '', $jumlah);
                                     $jumlah = (int)$jumlah;
 
-                                    $query_insert = mysqli_query($mysqli, "INSERT INTO `pemasukan`
-                                    (`tanggal_pemasukan`, `kategori_pemasukan`, `deskripsi_pemasukan`, 
-                                    `jumlah_pemasukan`, `id_pengguna`, `id_dompet`) VALUES ('$date', 
-                                    '$id_kategori', '$deskripsi', '$jumlah', '$id_pengguna', '$id_dompet')");
+                                    $query_update = mysqli_query($mysqli, "UPDATE `pemasukan` SET 
+                                    `tanggal_pemasukan`='$date',
+                                    `kategori_pemasukan`='$id_kategori',
+                                    `deskripsi_pemasukan`='$deskripsi',
+                                    `jumlah_pemasukan`='$jumlah',
+                                    `id_dompet`='$id_dompet' 
+                                    WHERE `id_pemasukan`='$id_pemasukan'");
 
-                                    if($query_insert) {
+                                    if($query_update) {
                                         ?>
 
                                         <script>
                                             Swal.fire({
                                                 title: "Berhasil!",
-                                                text: "Data Pemasukan Berhasil Ditambahkan!",
+                                                text: "Data Pemasukan Berhasil Diubah!",
                                                 icon: "success"
                                             }).then(function() {
                                                 window.location.href = 'pemasukan-page.php';

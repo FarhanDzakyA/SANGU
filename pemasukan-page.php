@@ -2,8 +2,18 @@
     session_start();
     include "ExeFiles/koneksi.php";
 
-    $query_table = mysqli_query($mysqli, "SELECT * FROM `pemasukan`");
+    $id_pengguna = $_SESSION['id_pengguna'];
+
+    $query_table = mysqli_query($mysqli, "SELECT pemasukan.id_pemasukan, pemasukan.tanggal_pemasukan, 
+    pemasukan.deskripsi_pemasukan, kategori.nama_kategori, pemasukan.jumlah_pemasukan, dompet.nama_dompet 
+    FROM `pemasukan`, `dompet`, `kategori` WHERE pemasukan.kategori_pemasukan = kategori.id_kategori AND 
+    pemasukan.id_dompet = dompet.id_dompet AND pemasukan.id_pengguna = '$id_pengguna' ORDER BY id_pemasukan ASC");
+
     $number = 1;
+
+    function rupiahFormat($number) {
+        return 'Rp ' . number_format($number, 0, ',', '.');
+    }
 ?>
 
 <!DOCTYPE html>
@@ -27,6 +37,8 @@
     <link href="Assets/css/sb-admin-2.min.css" rel="stylesheet">
     <link href="Assets/css/dataTables.bootstrap4.min.css" rel="stylesheet">
     <link href="Assets/css/styles.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body id="page-top">
     <!-- Wrapper -->
@@ -152,7 +164,7 @@
                                 <h5 class="m-0 font-weight-bold text-primary">
                                     Data Pemasukan
                                 </h5>
-                                <a class="d-none d-sm-inline-block btn btn-sm btn-primary rounded-pill shadow-sm" href="tambah-pemasukan.php">
+                                <a class="d-none d-sm-inline-block btn btn-sm btn-primary rounded-pill shadow-sm" href="tambahpemasukan.php">
                                     <i class="fas fa-plus fa-sm text-white-100 mr-2"></i>
                                     Tambah Data
                                 </a>
@@ -165,9 +177,10 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Tanggal</th>
-                                            <th>Kategori</th>
                                             <th>Deskripsi</th>
+                                            <th>Kategori</th>
                                             <th>Jumlah</th>
+                                            <th>Dompet</th>
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
@@ -176,19 +189,50 @@
                                         <tr>
                                             <td><?= $number ?></td>
                                             <td><?= $result['tanggal_pemasukan'] ?></td>
-                                            <td><?= $result['kategori_pemasukan'] ?></td>
                                             <td><?= $result['deskripsi_pemasukan'] ?></td>
-                                            <td><?= $result['jumlah_pemasukan'] ?></td>
+                                            <td><?= $result['nama_kategori'] ?></td>
+                                            <td><?= rupiahFormat($result['jumlah_pemasukan']) ?></td>
+                                            <td><?= $result['nama_dompet'] ?></td>
                                             <td>
-                                                <a href="" class="btn btn-primary btn-circle btn-sm" data-toggle="tooltip" data-placement="top" title="Edit">
+                                                <a href="editpemasukan.php?update=<?= $result['id_pemasukan'] ?>" class="btn btn-primary btn-circle btn-sm" data-toggle="tooltip" data-placement="top" title="Edit">
                                                     <i class="fas fa-fw fa-pen"></i>
                                                 </a>
                                                 <span class="mr-1"></span>
-                                                <a href="" class="btn btn-danger btn-circle btn-sm" data-toggle="modal" data-target="#hapusBarang<?= $result['id_barang'] ?>" data-toggle="tooltip" data-placement="top" title="Hapus">
+                                                <a href="#" class="btn btn-danger btn-circle btn-sm" data-toggle="modal" data-target="#hapusPemasukan<?= $result['id_pemasukan'] ?>" data-toggle="tooltip" data-placement="top" title="Hapus">
                                                     <i class="fas fa-fw fa-trash"></i>
                                                 </a>
                                             </td>
                                         </tr>
+
+                                        <div class="modal fade" id="hapusPemasukan<?= $result['id_pemasukan'] ?>" tabindex="-1" role="dialog">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-tittle">Hapus Data Pemasukan ?</h5>
+                                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">x</span>
+                                                        </button>
+                                                    </div>
+                                                    <form action="" method="POST">
+                                                        <input type="hidden" name="id_pemasukan" value="<?= $result['id_pemasukan'] ?>">
+
+                                                        <div class="modal-body">
+                                                            Apakah Anda yakin ingin menghapus catatan pemasukan <b>"<?= $result['deskripsi_pemasukan'] ?>"</b> ?
+                                                        </div>
+
+                                                        <div class="modal-footer">
+                                                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                                Cancel
+                                                            </button>
+                                                            <button type="submit" name="btn-hapus" class="btn btn-danger">
+                                                                Ya, Hapus Dompet
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <?php
                                                 $number++;
                                             }
@@ -262,3 +306,29 @@
     <script src="Assets/js/demo/datatables-demo.js"></script>
 </body>
 </html>
+
+<?php
+    if(isset($_POST['btn-hapus'])) {
+        $id_pemasukan = mysqli_real_escape_string($mysqli, $_POST['id_pemasukan']);
+
+        $query_delete = mysqli_query($mysqli, "DELETE FROM `pemasukan` WHERE `id_pemasukan` = '$id_pemasukan'");
+
+        if($query_delete) {
+            ?>
+
+            <script>
+                Swal.fire({
+                    title: "Berhasil!",
+                    text: "Data Pemasukan Berhasil Dihapus!",
+                    icon: "success"
+                }).then(function() {
+                    window.location.href = 'pemasukan-page.php';
+                });
+            </script>
+
+            <?php
+        } else {
+            echo "Error: " . $query_delete . "<br>" . mysqli_error($mysqli);
+        }
+    }
+?>
