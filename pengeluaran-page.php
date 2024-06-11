@@ -1,8 +1,9 @@
 <?php
     session_start();
+    $id = $_SESSION['id_pengguna'];
     include "ExeFiles/koneksi.php";
 
-    $query_table = mysqli_query($mysqli, "SELECT * FROM `pengeluaran`");
+    $query_table = mysqli_query($mysqli, "SELECT pengeluaran.tanggal_pengeluaran, kategori.nama_kategori,pengeluaran.deskripsi_pengeluaran,pengeluaran.jumlah_pengeluaran FROM pengeluaran, kategori WHERE pengeluaran.kategori_pengeluaran = kategori.id_kategori AND pengeluaran.id_pengguna = $id");
     $number = 1;
 ?>
 
@@ -152,7 +153,7 @@
                                 <h5 class="m-0 font-weight-bold text-primary">
                                     Data Pengeluaran
                                 </h5>
-                                <a class="d-none d-sm-inline-block btn btn-sm btn-primary rounded-pill shadow-sm" href="">
+                                <a class="d-none d-sm-inline-block btn btn-sm btn-primary rounded-pill shadow-sm" href="tambah-pengeluaran.php">
                                     <i class="fas fa-plus fa-sm text-white-100 mr-2"></i>
                                     Tambah Data
                                 </a>
@@ -176,7 +177,7 @@
                                         <tr>
                                             <td><?= $number ?></td>
                                             <td><?= $result['tanggal_pengeluaran'] ?></td>
-                                            <td><?= $result['kategori_pengeluaran'] ?></td>
+                                            <td><?= $result['nama_kategori'] ?></td>
                                             <td><?= $result['deskripsi_pengeluaran'] ?></td>
                                             <td><?= $result['jumlah_pengeluaran'] ?></td>
                                             <td>
