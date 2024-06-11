@@ -2,46 +2,13 @@
 session_start();
 include "ExeFiles/koneksi.php";
 
-$query_table = mysqli_query($mysqli, "SELECT * FROM `dompet`");
-$number = 1;
-$id = $_SESSION['id_pengguna'];
-$query_dompet = "SELECT * FROM `dompet` WHERE id_pengguna = '$id'";
-$result = $mysqli->query($query_dompet);
-$query_kategori = "SELECT * FROM `kategori` WHERE tipe_kategori = 'Pengeluaran'";
-$result2 = $mysqli->query($query_kategori);
+    $id = $_SESSION['id_pengguna'];
+    $query_dompet = mysqli_query($mysqli, "SELECT * FROM `dompet` WHERE id_pengguna = '$id'");
+    $query_kategori = mysqli_query($mysqli, "SELECT * FROM `kategori` WHERE tipe_kategori = 'Pengeluaran'");
 
-if (isset($_POST['btn-simpan'])) {
-    $deskripsi = $_POST['deskripsi'];
-    $saldo = $_POST['saldo'];
-    $username=$_POST['username'];
-    $tgl = $_POST['date'];
-    $kategori = $_POST['kategori'];
-    $dompet = $_POST['dompet'];
-    $quer = "INSERT INTO `pengeluaran`( `tanggal_pengeluaran`, `kategori_pengeluaran`, `deskripsi_pengeluaran`, `jumlah_pengeluaran`, `id_pengguna`, `id_dompet`) VALUES ('$tgl','$kategori','$deskripsi','$saldo','$username','$dompet')";
-    if ($mysqli->query($quer) === TRUE) {
-        echo "<script>
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Data dompet berhasil ditambahkan.',
-                    confirmButtonText: 'OK'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = 'dompet-page.php';
-                    }
-                });
-              </script>";
-    } else {
-        echo "<script>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Terjadi kesalahan saat menambahkan data dompet.',
-                    footer: '<a href=\"#\">Why do I have this issue?</a>'
-                });
-              </script>";
+    function rupiahFormat($number) {
+        return 'Rp ' . number_format($number, 0, ',', '.');
     }
-}
 ?>
 
 <!DOCTYPE html>
@@ -52,12 +19,16 @@ if (isset($_POST['btn-simpan'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
+
     <title>SANGU - Tambah Dompet</title>
+
     <link rel="icon" href="Assets/img/favicon.ico">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="Assets/css/sb-admin-2.min.css" rel="stylesheet">
     <link href="Assets/css/styles.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body id="page-top">
     <!-- Wrapper -->
@@ -189,49 +160,90 @@ if (isset($_POST['btn-simpan'])) {
                         <div class="card-body">
                             <form action="" method="POST" class="form-container">
                                 <!-- date -->
-                                <input type="hidden" name="date" value="<?= date('Y-m-d'); ?>">
-                                <!-- description  -->
                                 <div class="form-group">
-                                    <label for="description">Deskripsi <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
-                                    <input type="text" name="deskripsi" class="form-control" placeholder="Masukkan Deskripsi Pengeluaran ..." required>
+                                    <label for="date">Tanggal <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
+                                    <input type="date" id="date" name="date" class="form-control" value="<?= date('Y-m-d'); ?>" max="<?= date('Y-m-d'); ?>" required>
                                 </div>
-                                <!-- jumlah -->
+                                
+                                <!-- description -->
                                 <div class="form-group">
-                                    <label for="amount">Jumlah Pengeluaran <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
-                                    <input type="text" name="saldo" class="form-control" placeholder="Masukkan Jumlah Pengeluaran" required>
+                                    <label for="deskripsi">Deskripsi <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
+                                    <input type="text" id="deskripsi" name="deskripsi" class="form-control" placeholder="Masukkan deskripsi pengeluaran ..." required>
                                 </div>
-                                <!-- user -->
-                                <input type="hidden" name="username" value="<?= $id; ?>">
-                                <!-- pilih dompet -->
+
+                                <!-- amount -->
                                 <div class="form-group">
-                                    <label for="dompet">Dompet</label>
-                                    <select name="dompet" class="form-select form-control">
-                                        <option selected disabled>Pilih Dompet</option>
-                                        <?php if ($result->num_rows > 0):?>
-                                            <?php while ($row = $result->fetch_assoc()):?>
-                                                <option value="<?= $row['id_dompet']?>"><?= $row['nama_dompet']?></option>
-                                            <?php endwhile;?>
-                                        <?php endif;?>
-                                    </select>
+                                    <label for="jumlah">Jumlah pengeluaran <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
+                                    <input type="text" id="jumlah" name="jumlah" class="form-control" placeholder="Masukkan jumlah pengeluaran ..." value="Rp " onkeyup="formatRupiah(this)" required>
                                 </div>
-                                <!-- kategori -->
+                                
+                                <!-- dompet -->
                                 <div class="form-group">
-                                    <label for="kategori">Kategori</label>
-                                    <select name="kategori" class="form-select form-control">
-                                        <option selected disabled>Pilih Kategori</option>
-                                        <?php if ($result2->num_rows > 0):?>
-                                            <?php while ($row = $result2->fetch_assoc()):?>
-                                                <option value="<?= $row['id_kategori']?>"><?= $row['nama_kategori']?></option>
-                                            <?php endwhile;?>
-                                        <?php endif;?>
+                                    <label for="dompet">Dompet <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
+                                    <select id="dompet" name="dompet" class="form-select form-control" required>
+                                        <option value="" selected disabled>-- Pilih Dompet --</option>
+                                        <?php while($dompet = mysqli_fetch_assoc($query_dompet)) { ?>
+                                            <option value="<?= $dompet['id_dompet'] ?>"><?= $dompet['nama_dompet'] ?> -- <?= rupiahFormat($dompet['saldo']) ?></option>
+                                        <?php } ?>
                                     </select>
                                 </div>
 
-                                <div class="d-flex justify-content-between">
+                                <!-- kategori -->
+                                <div class="form-group">
+                                    <label for="kategori">Kategori <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
+                                    <select id="kategori" name="kategori" class="form-select form-control" required>
+                                        <option value="" selected disabled>-- Pilih Kategori --</option>
+                                        <?php while($kategori = mysqli_fetch_assoc($query_kategori)) { ?>
+                                            <option value="<?= $kategori['id_kategori'] ?>"><?= $kategori['nama_kategori'] ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+
+                                <!-- tombol -->
+                                <div class="d-flex align-items-center justify-content-start">
                                     <button type="submit" name="btn-simpan" class="btn btn-primary">Simpan</button>
+                                    <span class="mr-2"></span>
                                     <a href="pengeluaran-page.php" class="btn btn-secondary">Batalkan</a>
                                 </div>
                             </form>
+
+                            <?php
+                                if(isset($_POST['btn-simpan'])) {
+                                    $id_pengguna = $_SESSION['id_pengguna'];
+                                    $date = mysqli_real_escape_string($mysqli, $_POST['date']);
+                                    $deskripsi = mysqli_real_escape_string($mysqli, $_POST['deskripsi']);
+                                    $id_dompet = mysqli_real_escape_string($mysqli, $_POST['dompet']);
+                                    $id_kategori = mysqli_real_escape_string($mysqli, $_POST['kategori']);
+
+                                    $jumlah = mysqli_real_escape_string($mysqli, $_POST['jumlah']);
+                                    $jumlah = str_replace('Rp', '', $jumlah);
+                                    $jumlah = str_replace('.', '', $jumlah);
+                                    $jumlah = (int)$jumlah;
+
+                                    $query_insert = mysqli_query($mysqli, "INSERT INTO `pengeluaran`
+                                    (`tanggal_pengeluaran`, `kategori_pengeluaran`, `deskripsi_pengeluaran`, 
+                                    `jumlah_pengeluaran`, `id_pengguna`, `id_dompet`) VALUES ('$date', 
+                                    '$id_kategori', '$deskripsi', '$jumlah', '$id_pengguna', '$id_dompet')");
+
+                                    if($query_insert) {
+                                        ?>
+
+                                        <script>
+                                            Swal.fire({
+                                                title: "Berhasil!",
+                                                text: "Data Pengeluaran Berhasil Ditambahkan!",
+                                                icon: "success"
+                                            }).then(function() {
+                                                window.location.href = 'pengeluaran-page.php';
+                                            });
+                                        </script>
+
+                                        <?php
+                                    } else {
+                                        echo "Error: " . $query_insert . "<br>" . mysqli_error($mysqli);
+                                    }
+                                }
+                            ?>
                         </div>
                     </div>
                 </div>
@@ -285,14 +297,22 @@ if (isset($_POST['btn-simpan'])) {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        document.getElementById('income_type').addEventListener('change', function () {
-            const otherIncomeSection = document.getElementById('other_income_section');
-            if (this.value === 'Lainnya') {
-                otherIncomeSection.style.display = 'block';
+        function formatRupiah(input) {
+            let value = input.value.replace(/[^\d]/g, '');
+
+            if (value === '' || isNaN(parseInt(value))) {
+                value = 0;
             } else {
-                otherIncomeSection.style.display = 'none';
+                value = parseInt(value);
             }
-        });
+
+            value = 'Rp ' + formatNumber(parseInt(value));
+            input.value = value;
+        }
+
+        function formatNumber(number) {
+            return number.toLocaleString('id-ID');
+        }
     </script>
 </body>
 </html>
