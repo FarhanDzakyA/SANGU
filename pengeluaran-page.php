@@ -1,10 +1,19 @@
 <?php
     session_start();
-    $id = $_SESSION['id_pengguna'];
     include "ExeFiles/koneksi.php";
 
-    $query_table = mysqli_query($mysqli, "SELECT pengeluaran.tanggal_pengeluaran, kategori.nama_kategori,pengeluaran.deskripsi_pengeluaran,pengeluaran.jumlah_pengeluaran FROM pengeluaran, kategori WHERE pengeluaran.kategori_pengeluaran = kategori.id_kategori AND pengeluaran.id_pengguna = $id");
+    $id = $_SESSION['id_pengguna'];
+
+    $query_table = mysqli_query($mysqli, "SELECT pengeluaran.id_pengeluaran, pengeluaran.tanggal_pengeluaran, kategori.nama_kategori,
+    pengeluaran.deskripsi_pengeluaran,pengeluaran.jumlah_pengeluaran, dompet.nama_dompet FROM 
+    `pengeluaran`, `kategori`, `dompet` WHERE pengeluaran.kategori_pengeluaran = kategori.id_kategori AND 
+    pengeluaran.id_dompet = dompet.id_dompet AND pengeluaran.id_pengguna = '$id' ORDER BY id_pengeluaran ASC");
+    
     $number = 1;
+    
+    function rupiahFormat($number) {
+        return 'Rp ' . number_format($number, 0, ',', '.');
+    }
 ?>
 
 <!DOCTYPE html>
@@ -28,6 +37,8 @@
     <link href="Assets/css/sb-admin-2.min.css" rel="stylesheet">
     <link href="Assets/css/dataTables.bootstrap4.min.css" rel="stylesheet">
     <link href="Assets/css/styles.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body id="page-top">
     <!-- Wrapper -->
@@ -153,7 +164,7 @@
                                 <h5 class="m-0 font-weight-bold text-primary">
                                     Data Pengeluaran
                                 </h5>
-                                <a class="d-none d-sm-inline-block btn btn-sm btn-primary rounded-pill shadow-sm" href="tambah-pengeluaran.php">
+                                <a class="d-none d-sm-inline-block btn btn-sm btn-primary rounded-pill shadow-sm" href="tambahpengeluaran.php">
                                     <i class="fas fa-plus fa-sm text-white-100 mr-2"></i>
                                     Tambah Data
                                 </a>
@@ -166,9 +177,10 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Tanggal</th>
-                                            <th>Kategori</th>
                                             <th>Deskripsi</th>
+                                            <th>Kategori</th>
                                             <th>Jumlah</th>
+                                            <th>Dompet</th>
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
@@ -177,19 +189,50 @@
                                         <tr>
                                             <td><?= $number ?></td>
                                             <td><?= $result['tanggal_pengeluaran'] ?></td>
-                                            <td><?= $result['nama_kategori'] ?></td>
                                             <td><?= $result['deskripsi_pengeluaran'] ?></td>
-                                            <td><?= $result['jumlah_pengeluaran'] ?></td>
+                                            <td><?= $result['nama_kategori'] ?></td>
+                                            <td><?= rupiahFormat($result['jumlah_pengeluaran']) ?></td>
+                                            <td><?= $result['nama_dompet'] ?></td>
                                             <td>
-                                                <a href="" class="btn btn-primary btn-circle btn-sm" data-toggle="tooltip" data-placement="top" title="Edit">
+                                                <a href="editpengeluaran.php?update=<?= $result['id_pengeluaran'] ?>" class="btn btn-primary btn-circle btn-sm" data-toggle="tooltip" data-placement="top" title="Edit">
                                                     <i class="fas fa-fw fa-pen"></i>
                                                 </a>
                                                 <span class="mr-1"></span>
-                                                <a href="" class="btn btn-danger btn-circle btn-sm" data-toggle="modal" data-target="#hapusBarang<?= $result['id_barang'] ?>" data-toggle="tooltip" data-placement="top" title="Hapus">
+                                                <a href="" class="btn btn-danger btn-circle btn-sm" data-toggle="modal" data-target="#hapusPengeluaran<?= $result['id_pengeluaran'] ?>" data-toggle="tooltip" data-placement="top" title="Hapus">
                                                     <i class="fas fa-fw fa-trash"></i>
                                                 </a>
                                             </td>
                                         </tr>
+
+                                        <div class="modal fade" id="hapusPengeluaran<?= $result['id_pengeluaran'] ?>" tabindex="-1" role="dialog">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-tittle">Hapus Data Pengeluaran ?</h5>
+                                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">x</span>
+                                                        </button>
+                                                    </div>
+                                                    <form action="" method="POST">
+                                                        <input type="hidden" name="id_pengeluaran" value="<?= $result['id_pengeluaran'] ?>">
+
+                                                        <div class="modal-body">
+                                                            Apakah Anda yakin ingin menghapus catatan pengeluaran <b>"<?= $result['deskripsi_pengeluaran'] ?>"</b> ?
+                                                        </div>
+
+                                                        <div class="modal-footer">
+                                                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                                Cancel
+                                                            </button>
+                                                            <button type="submit" name="btn-hapus" class="btn btn-danger">
+                                                                Ya, Hapus Dompet
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
                                         <?php
                                                 $number++;
                                             }
@@ -263,3 +306,29 @@
     <script src="Assets/js/demo/datatables-demo.js"></script>
 </body>
 </html>
+
+<?php
+    if(isset($_POST['btn-hapus'])) {
+        $id_pengeluaran = mysqli_real_escape_string($mysqli, $_POST['id_pengeluaran']);
+
+        $query_delete = mysqli_query($mysqli, "DELETE FROM `pengeluaran` WHERE `id_pengeluaran` = '$id_pengeluaran'");
+
+        if($query_delete) {
+            ?>
+
+            <script>
+                Swal.fire({
+                    title: "Berhasil!",
+                    text: "Data Pengeluaran Berhasil Dihapus!",
+                    icon: "success"
+                }).then(function() {
+                    window.location.href = 'pengeluaran-page.php';
+                });
+            </script>
+
+            <?php
+        } else {
+            echo "Error: " . $query_delete . "<br>" . mysqli_error($mysqli);
+        }
+    }
+?>
