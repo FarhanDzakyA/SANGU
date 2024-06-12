@@ -1,6 +1,92 @@
 <?php
     session_start();
+    include "ExeFiles/koneksi.php";
+
+    function rupiahFormat($number) {
+        return 'Rp ' . number_format($number, 0, ',', '.');
+    }
+$years_query = "
+    SELECT DISTINCT year FROM (
+        SELECT YEAR(tanggal_pemasukan) AS year
+        FROM pemasukan
+        UNION
+        SELECT YEAR(tanggal_pengeluaran) AS year
+        FROM pengeluaran
+    ) AS combined_years
+    ORDER BY year;
+";
+
+$years_result = $mysqli->query($years_query);
+
+if (isset($_GET['tahun'])) {
+    $tahun = $_GET['tahun'];
+    
+    $pemasukan_query = "
+        SELECT
+            MONTHNAME(tanggal_pemasukan) AS bulan,
+            COUNT(id_pemasukan) AS jumlah_transaksi,
+            SUM(jumlah_pemasukan) AS total_pemasukan
+        FROM
+            pemasukan
+        WHERE
+            YEAR(tanggal_pemasukan) = $tahun
+        GROUP BY
+            MONTH(tanggal_pemasukan)
+        ORDER BY
+            MONTH(tanggal_pemasukan);
+    ";
+    $pemasukan_result = $mysqli->query($pemasukan_query);
+    
+    $totalpemasukan_query = "
+        SELECT
+            SUM(jumlah_pemasukan) AS totalpemasukan,
+            COUNT(id_pemasukan) AS totaltransaksipemasukan
+        FROM
+            pemasukan
+        WHERE
+            YEAR(tanggal_pemasukan) = $tahun;
+    ";
+    $totalpemasukan_result = $mysqli->query($totalpemasukan_query);
+    $totalpemasukan_row = $totalpemasukan_result->fetch_assoc();
+    $totalpemasukan = $totalpemasukan_row['totalpemasukan'];
+    $totaltransaksipemasukan = $totalpemasukan_row['totaltransaksipemasukan'];
+    
+    $pengeluaran_query = "
+        SELECT
+            MONTHNAME(tanggal_pengeluaran) AS bulan,
+            COUNT(id_pengeluaran) AS jumlah_transaksi,
+            SUM(jumlah_pengeluaran) AS total_pengeluaran
+        FROM
+            pengeluaran
+        WHERE
+            YEAR(tanggal_pengeluaran) = $tahun
+        GROUP BY
+            MONTH(tanggal_pengeluaran)
+        ORDER BY
+            MONTH(tanggal_pengeluaran);
+    ";
+    $pengeluaran_result = $mysqli->query($pengeluaran_query);
+    
+    $pengeluaran_total_query = "
+        SELECT
+            SUM(jumlah_pengeluaran) AS total_pengeluaran,
+            COUNT(id_pengeluaran) AS totaltransaksipengeluaran
+        FROM
+            pengeluaran
+        WHERE
+            YEAR(tanggal_pengeluaran) = $tahun;
+    ";
+    $pengeluaran_total_result = $mysqli->query($pengeluaran_total_query);
+    $pengeluaran_total_row = $pengeluaran_total_result->fetch_assoc();
+    $total_pengeluaran = $pengeluaran_total_row['total_pengeluaran'];
+    $totaltransaksipengeluaran = $pengeluaran_total_row['totaltransaksipengeluaran'];
+}
+
+
+
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -160,7 +246,7 @@
                                             Pemasukan
                                         </a>
 
-                                        <a class="btn btn-warning rounded-pill" href="tambahpengeluaran">
+                                        <a class="btn btn-warning rounded-pill" href="tambah-pengeluaran.php">
                                             <i class="fa-solid fa-plus text-white-100 mr-1"></i>
                                             Pengeluaran
                                         </a>
@@ -260,18 +346,99 @@
                     <!-- End of Information Card -->
                 </div>
                 <!-- End of Container -->
-            </div>
-            <!-- End of Main Content -->
-
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; SANGU 2024</span>
+                <div class="card" style="width: 78rem; margin-left: 25px;">
+                    <div class="card-header" style="font-weight:bold; font-size:20px;">
+                        Laporan Pemasukan & Pengeluaran
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Filter Data *</p>
+                        <form method="GET" action="">
+                            <div class="d-flex align-items-center">
+                                <div class="form-group" style="width:160px; margin-right: 10px;">
+                                    <select name="tahun" class="form-select form-control">
+                                        <option selected disabled>--Pilih Tahun--</option>
+                                        <?php while($row = $years_result->fetch_assoc()): ?>
+                                            <option value="<?php echo $row['year']; ?>"><?php echo $row['year']; ?></option>
+                                        <?php endwhile; ?>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="margin-top: -17px;">Tampilkan</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-            </footer>
-            <!-- End of Footer -->
+
+                <?php if (isset($pemasukan_result) && isset($pengeluaran_result)): ?>
+                <div class="card" style="width: 78rem; margin-left: 25px; margin-top: 20px;">
+                    <div class="card-header" style="font-weight:bold; font-size:20px;">
+                        Laporan Pemasukan & Pengeluaran
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Pemasukan</h5>
+                        <table class="table table-bordered"">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Bulan</th>
+                                    <th scope="col">Jumlah Transaksi</th>
+                                    <th scope="col">Pemasukan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php while($row = $pemasukan_result->fetch_assoc()): ?>
+                                <tr>
+                                    <td><?php echo $row['bulan']; ?></td>
+                                    <td><?php echo $row['jumlah_transaksi']; ?></td>
+                                    <td><?php echo rupiahFormat($row ['total_pemasukan']); ?></td>
+                                </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+                            <tr>
+                                <th><h5>Total</h5></th>
+                                <th><?php echo $totaltransaksipemasukan; ?></th>
+                                <th><?php echo rupiahFormat($totalpemasukan); ?></th>
+                            </tr>
+
+                        </table>
+                        
+                        <h5 class="card-title mt-4">Pengeluaran</h5>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Bulan</th>
+                                    <th scope="col">Jumlah Transaksi</th>
+                                    <th scope="col">Pengeluaran</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php while($row = $pengeluaran_result->fetch_assoc()): ?>
+                                <tr>
+                                    <td><?php echo $row['bulan']; ?></td>
+                                    <td><?php echo $row['jumlah_transaksi']; ?></td>
+                                    <td><?php echo $row['total_pengeluaran']; ?></td>
+                                </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+                            <tr>
+                            <th><h5>Total</h5></th>
+                                <th><?php echo $totaltransaksipengeluaran; ?></th>
+                                <th><?php echo rupiahFormat($total_pengeluaran); ?></th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+                <!-- Footer -->
+                <footer class="sticky-footer bg-white">
+                    <div class="container my-auto">
+                        <div class="copyright text-center my-auto">
+                            <span>Copyright &copy; SANGU 2024</span>
+                        </div>
+                    </div>
+                </footer>
+                <!-- End of Footer -->
+
+
         </div>
         <!-- End of Content Wrapper -->
     </div>
