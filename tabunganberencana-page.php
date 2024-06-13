@@ -199,7 +199,7 @@
                                                 <a href="#" class="btn btn-primary btn-circle" data-toggle="modal" data-target="#<?=$modal_id_plus;?>"><i class="fa-solid fa-plus"></i></a>
                                                 <a href="#" class="btn btn-primary btn-circle" data-toggle="modal" data-target="#<?=$modal_id_minus;?>"><i class="fa-solid fa-minus"></i></a>
                                                 <a href="#" class="btn btn-warning btn-circle"><i class="fas fa-fw fa-pen"></i></a>
-                                                <a href="#" class="btn btn-danger btn-circle"><i class="fas fa-fw fa-trash"></i></a>
+                                                <a href="#" class="btn btn-danger btn-circle" data-toggle="modal" data-target="#hapusRencana<?=$result['id_rencana']?>"><i class="fas fa-fw fa-trash"></i></a>
                                             </div>
                                         </div>
                                     </div>
@@ -248,6 +248,35 @@
                                         </div>
                                     </div>
                                  </div>
+                                 <!--delete modal-->
+                                        <div class="modal fade" id="hapusRencana<?= $result['id_rencana'] ?>" tabindex="-1" role="dialog">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-tittle">Hapus Rencana ?</h5>
+                                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">x</span>
+                                                        </button>
+                                                    </div>
+                                                    <form action="" method="POST">
+                                                        <input type="hidden" name="id_rencana" value="<?= $result['id_rencana'] ?>">
+
+                                                        <div class="modal-body">
+                                                            Apakah Anda yakin ingin menghapus Rencana <b><?= $result['rencana'] ?></b> ?
+                                                        </div>
+
+                                                        <div class="modal-footer">
+                                                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                                Cancel
+                                                            </button>
+                                                            <button type="submit" name="btn-hapus" class="btn btn-danger">
+                                                                Ya, Hapus Rencana
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
                                 <?php }?>
                             </div>
                     </div>
@@ -383,9 +412,9 @@
 
 <?php
     if(isset($_POST['btn-hapus'])) {
-        $id_dompet = mysqli_real_escape_string($mysqli, $_POST['id_dompet']);
+        $id_rencana = mysqli_real_escape_string($mysqli, $_POST['id_rencana']);
 
-        $query_delete = mysqli_query($mysqli, "DELETE FROM `dompet` WHERE `id_dompet` = '$id_dompet'");
+        $query_delete = mysqli_query($mysqli, "DELETE FROM `rencana` WHERE id_rencana ='$id_rencana'");
 
         if($query_delete) {
             ?>
@@ -393,10 +422,10 @@
             <script>
                 Swal.fire({
                     title: "Berhasil!",
-                    text: "Data Dompet Berhasil Dihapus!",
+                    text: "Rencana Tabungan Berhasil Dihapus!",
                     icon: "success"
                 }).then(function() {
-                    window.location.href = 'dompet-page.php';
+                    window.location.href = 'tabunganberencana-page.php';
                 });
             </script>
 
@@ -467,5 +496,4 @@ if(isset($_POST['btn-depo'])){
         echo "Error: " . $query . "<br>" . mysqli_error($mysqli);
     }
 }
-
 ?>
