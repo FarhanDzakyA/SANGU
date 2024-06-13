@@ -12,7 +12,7 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
 
-    <title>SANGU - Tambah Dompet</title>
+    <title>SANGU - Tambah Rencana</title>
 
     <link rel="icon" href="Assets/img/favicon.ico">
 
@@ -78,7 +78,7 @@
             </div>
 
             <!-- Dompet -->
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="dompet-page.php">
                     <i class="fa-solid fa-fw fa-wallet"></i>
                     <span>Dompet</span>
@@ -86,7 +86,7 @@
             </li>
 
             <!-- Tabungan Berencana -->
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link" href="tabunganberencana-page.php">
                     <i class="fa-solid fa-fw fa-piggy-bank"></i>
                     <span>Tabungan Berencana</span>
@@ -114,14 +114,14 @@
 
                     <!-- Current Page Indication -->
                      <div class="d-flex align-items-center">
-                         <a class="nav-link d-flex align-items-center" href="dompet-page.php">
+                         <a class="nav-link d-flex align-items-center" href="tabunganberencana-page.php">
                             <i class="fa-solid fa-fw fa-piggy-bank mr-2" style="color: #6e707e"></i>
                             <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Tabungan Berencana</h4>
                          </a>
 
                          <i class="fa-solid fa-fw fa-angle-right" style="color: #6e707e"></i>
 
-                         <a class="nav-link d-flex align-items-center" href="tambahdompet.php">
+                         <a class="nav-link d-flex align-items-center" href="tambah-rencana.php">
                              <i class="fa-solid fa-fw fa-plus mr-2" style="color: #6e707e"></i>
                              <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Tambah Rencana</h4>
                          </a>
@@ -194,7 +194,7 @@
                                         <script>
                                             Swal.fire({
                                                 title: "Berhasil!",
-                                                text: "Data Dompet Berhasil Ditambahkan!",
+                                                text: "Rencana Tabungan Berhasil Ditambahkan!",
                                                 icon: "success"
                                             }).then(function() {
                                                 window.location.href = 'tabunganberencana-page.php';
