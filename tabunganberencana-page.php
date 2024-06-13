@@ -20,7 +20,7 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
 
-    <title>SANGU - Dompet</title>
+    <title>SANGU - Tabungan Berencana</title>
 
     <link rel="icon" href="Assets/img/favicon.ico">
 
@@ -124,7 +124,7 @@
                     </form>
 
                     <!-- Current Page Indication -->
-                    <a class="nav-link d-flex align-items-center" href="dompet-page.php">
+                    <a class="nav-link d-flex align-items-center" href="tabunganberencana-page.php">
                         <i class="fa-solid fa-fw fa-piggy-bank mr-2" style="color: #6e707e"></i>
                         <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Tabungan Berencana</h4>
                     </a>
@@ -198,7 +198,7 @@
                                             <div class="col text-center">
                                                 <a href="#" class="btn btn-primary btn-circle" data-toggle="modal" data-target="#<?=$modal_id_plus;?>"><i class="fa-solid fa-plus"></i></a>
                                                 <a href="#" class="btn btn-primary btn-circle" data-toggle="modal" data-target="#<?=$modal_id_minus;?>"><i class="fa-solid fa-minus"></i></a>
-                                                <a href="#" class="btn btn-warning btn-circle"><i class="fas fa-fw fa-pen"></i></a>
+                                                <a href="edit-rencana.php?update=<?=$result['id_rencana']?>" class="btn btn-warning btn-circle"><i class="fas fa-fw fa-pen"></i></a>
                                                 <a href="#" class="btn btn-danger btn-circle" data-toggle="modal" data-target="#hapusRencana<?=$result['id_rencana']?>"><i class="fas fa-fw fa-trash"></i></a>
                                             </div>
                                         </div>
