@@ -1,5 +1,8 @@
 <?php
-    session_start();
+    include "ExeFiles/session-check.php";
+?>
+
+<?php
     include "ExeFiles/koneksi.php";
 ?>
 
@@ -106,11 +109,9 @@
             <div id="content">
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <form class="form-inline">
-                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                            <i class="fa-solid fa-bars"></i>
-                        </button>
-                    </form>
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
 
                     <!-- Current Page Indication -->
                      <div class="d-flex align-items-center">
@@ -172,7 +173,7 @@
                                 <div class="d-sm-flex align-items-center justify-content-start">
                                     <button type="submit" name="btn-simpan" class="btn btn-primary">Simpan</button>
                                     <span class="mr-2"></span>
-                                    <a href="tabunganberencana-page.php" class="btn btn-secondary">Batalkan</a>
+                                    <a href="tabunganberencana-page.php" class="btn btn-secondary">Batal</a>
                                 </div>
                             </form>
 
@@ -249,7 +250,7 @@
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">
                         Cancel
                     </button>
-                    <a class="btn btn-primary" href="login-page.php">Logout</a>
+                    <a class="btn btn-primary" href="ExeFiles/logout-exe.php">Logout</a>
                 </div>
             </div>
         </div>

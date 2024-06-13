@@ -4,7 +4,10 @@
     $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
     $invalidLogin = isset($_SESSION['invalidLogin']) ? $_SESSION['invalidLogin'] : false;
 
-    unset($_SESSION['username']);
+    if(isset($_SESSION['login'])) {
+        header("Location: dashboard.php");
+    }
+
     unset($_SESSION['invalidLogin']);
 ?>
 

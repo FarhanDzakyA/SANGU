@@ -1,90 +1,108 @@
 <?php
-    session_start();
+    include "ExeFiles/session-check.php";
+?>
+
+<?php
     include "ExeFiles/koneksi.php";
+
+    setlocale(LC_ALL, 'IND');
 
     function rupiahFormat($number) {
         return 'Rp ' . number_format($number, 0, ',', '.');
     }
-$years_query = "
-    SELECT DISTINCT year FROM (
-        SELECT YEAR(tanggal_pemasukan) AS year
-        FROM pemasukan
-        UNION
-        SELECT YEAR(tanggal_pengeluaran) AS year
-        FROM pengeluaran
-    ) AS combined_years
-    ORDER BY year;
-";
 
-$years_result = $mysqli->query($years_query);
+    $query_maxpemasukan = mysqli_query($mysqli, "SELECT MAX(`jumlah_pemasukan`) AS Max FROM `pemasukan` WHERE `id_pengguna` = '$_SESSION[id_pengguna]';");
+    $max_pemasukan = mysqli_fetch_assoc($query_maxpemasukan);
 
-if (isset($_GET['tahun'])) {
-    $tahun = $_GET['tahun'];
-    
-    $pemasukan_query = "
-        SELECT
-            MONTHNAME(tanggal_pemasukan) AS bulan,
-            COUNT(id_pemasukan) AS jumlah_transaksi,
-            SUM(jumlah_pemasukan) AS total_pemasukan
-        FROM
-            pemasukan
-        WHERE
-            YEAR(tanggal_pemasukan) = $tahun
-        GROUP BY
-            MONTH(tanggal_pemasukan)
-        ORDER BY
-            MONTH(tanggal_pemasukan);
+    $query_maxpengeluaran = mysqli_query($mysqli, "SELECT MAX(`jumlah_pengeluaran`) AS Max FROM `pengeluaran` WHERE `id_pengguna` = '$_SESSION[id_pengguna]';");
+    $max_pengeluaran = mysqli_fetch_assoc($query_maxpengeluaran);
+
+    $query_jumlahDompet = mysqli_query($mysqli, "SELECT COUNT(`id_dompet`) AS total FROM `dompet` WHERE `id_pengguna` = '$_SESSION[id_pengguna]'");
+    $jumlahDompet = mysqli_fetch_assoc($query_jumlahDompet);
+
+    $query_jumlahTabungan = mysqli_query($mysqli, "SELECT COUNT(`id_rencana`) as total FROM `rencana` WHERE `id_pengguna` = '$_SESSION[id_pengguna]' AND `tertabung` < `target`");
+    $jumlahTabungan = mysqli_fetch_assoc($query_jumlahTabungan);
+
+    $years_query = "
+        SELECT DISTINCT year FROM (
+            SELECT YEAR(tanggal_pemasukan) AS year
+            FROM pemasukan
+            UNION
+            SELECT YEAR(tanggal_pengeluaran) AS year
+            FROM pengeluaran
+        ) AS combined_years
+        ORDER BY year;
     ";
-    $pemasukan_result = $mysqli->query($pemasukan_query);
-    
-    $totalpemasukan_query = "
-        SELECT
-            SUM(jumlah_pemasukan) AS totalpemasukan,
-            COUNT(id_pemasukan) AS totaltransaksipemasukan
-        FROM
-            pemasukan
-        WHERE
-            YEAR(tanggal_pemasukan) = $tahun;
-    ";
-    $totalpemasukan_result = $mysqli->query($totalpemasukan_query);
-    $totalpemasukan_row = $totalpemasukan_result->fetch_assoc();
-    $totalpemasukan = $totalpemasukan_row['totalpemasukan'];
-    $totaltransaksipemasukan = $totalpemasukan_row['totaltransaksipemasukan'];
-    
-    $pengeluaran_query = "
-        SELECT
-            MONTHNAME(tanggal_pengeluaran) AS bulan,
-            COUNT(id_pengeluaran) AS jumlah_transaksi,
-            SUM(jumlah_pengeluaran) AS total_pengeluaran
-        FROM
-            pengeluaran
-        WHERE
-            YEAR(tanggal_pengeluaran) = $tahun
-        GROUP BY
-            MONTH(tanggal_pengeluaran)
-        ORDER BY
-            MONTH(tanggal_pengeluaran);
-    ";
-    $pengeluaran_result = $mysqli->query($pengeluaran_query);
-    
-    $pengeluaran_total_query = "
-        SELECT
-            SUM(jumlah_pengeluaran) AS total_pengeluaran,
-            COUNT(id_pengeluaran) AS totaltransaksipengeluaran
-        FROM
-            pengeluaran
-        WHERE
-            YEAR(tanggal_pengeluaran) = $tahun;
-    ";
-    $pengeluaran_total_result = $mysqli->query($pengeluaran_total_query);
-    $pengeluaran_total_row = $pengeluaran_total_result->fetch_assoc();
-    $total_pengeluaran = $pengeluaran_total_row['total_pengeluaran'];
-    $totaltransaksipengeluaran = $pengeluaran_total_row['totaltransaksipengeluaran'];
-}
 
+    $years_result = $mysqli->query($years_query);
 
+    if (isset($_GET['tahun'])) {
+        $tahun = $_GET['tahun'];
+        
+        $pemasukan_query = "
+            SELECT
+                MONTHNAME(tanggal_pemasukan) AS bulan,
+                COUNT(id_pemasukan) AS jumlah_transaksi,
+                SUM(jumlah_pemasukan) AS total_pemasukan
+            FROM
+                pemasukan
+            WHERE
+                YEAR(tanggal_pemasukan) = $tahun
+            GROUP BY
+                MONTH(tanggal_pemasukan)
+            ORDER BY
+                MONTH(tanggal_pemasukan);
+        ";
 
+        $pemasukan_result = $mysqli->query($pemasukan_query);
+            
+        $totalpemasukan_query = "
+            SELECT
+                SUM(jumlah_pemasukan) AS totalpemasukan,
+                COUNT(id_pemasukan) AS totaltransaksipemasukan
+            FROM
+                pemasukan
+            WHERE
+                YEAR(tanggal_pemasukan) = $tahun;
+        ";
 
+        $totalpemasukan_result = $mysqli->query($totalpemasukan_query);
+        $totalpemasukan_row = $totalpemasukan_result->fetch_assoc();
+        $totalpemasukan = $totalpemasukan_row['totalpemasukan'];
+        $totaltransaksipemasukan = $totalpemasukan_row['totaltransaksipemasukan'];
+            
+        $pengeluaran_query = "
+            SELECT
+                MONTHNAME(tanggal_pengeluaran) AS bulan,
+                COUNT(id_pengeluaran) AS jumlah_transaksi,
+                SUM(jumlah_pengeluaran) AS total_pengeluaran
+            FROM
+                pengeluaran
+            WHERE
+                YEAR(tanggal_pengeluaran) = $tahun
+            GROUP BY
+                MONTH(tanggal_pengeluaran)
+            ORDER BY
+                MONTH(tanggal_pengeluaran);
+        ";
+        
+        $pengeluaran_result = $mysqli->query($pengeluaran_query);
+        
+        $pengeluaran_total_query = "
+            SELECT
+                SUM(jumlah_pengeluaran) AS total_pengeluaran,
+                COUNT(id_pengeluaran) AS totaltransaksipengeluaran
+            FROM
+                pengeluaran
+            WHERE
+                YEAR(tanggal_pengeluaran) = $tahun;
+        ";
+
+        $pengeluaran_total_result = $mysqli->query($pengeluaran_total_query);
+        $pengeluaran_total_row = $pengeluaran_total_result->fetch_assoc();
+        $total_pengeluaran = $pengeluaran_total_row['total_pengeluaran'];
+        $totaltransaksipengeluaran = $pengeluaran_total_row['totaltransaksipengeluaran'];
+    }
 ?>
 
 
@@ -188,14 +206,13 @@ if (isset($_GET['tahun'])) {
 
         <!-- Page Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Content Page -->
             <div id="content">
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <form class="form-inline">
-                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                            <i class="fa-solid fa-bars"></i>
-                        </button>
-                    </form>
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
 
                     <!-- Current Page Indication -->
                     <a class="nav-link d-flex align-items-center" href="dashboard.php">
@@ -246,7 +263,7 @@ if (isset($_GET['tahun'])) {
                                             Pemasukan
                                         </a>
 
-                                        <a class="btn btn-warning rounded-pill" href="tambah-pengeluaran.php">
+                                        <a class="btn btn-warning rounded-pill" href="tambahpengeluaran.php">
                                             <i class="fa-solid fa-plus text-white-100 mr-1"></i>
                                             Pengeluaran
                                         </a>
@@ -269,7 +286,13 @@ if (isset($_GET['tahun'])) {
                                                 Pemasukan Terbesar
                                             </div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                Rp 3.000.000
+                                                <?php
+                                                    if($max_pemasukan === null || $max_pemasukan === false || !isset($max_pemasukan['Max'])) {
+                                                        echo "-";
+                                                    } else {
+                                                        echo rupiahFormat($max_pemasukan['Max']);
+                                                    }
+                                                ?>
                                             </div>
                                         </div>
                                         <div class="col-auto">
@@ -290,7 +313,13 @@ if (isset($_GET['tahun'])) {
                                                 Pengeluaran Terbesar
                                             </div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                Rp 250.000.000
+                                                <?php
+                                                    if($max_pengeluaran === null || $max_pengeluaran === false || !isset($max_pengeluaran['Max'])) {
+                                                        echo "-";
+                                                    } else {
+                                                        echo rupiahFormat($max_pengeluaran['Max']);
+                                                    }
+                                                ?>
                                             </div>
                                         </div>
                                         <div class="col-auto">
@@ -311,7 +340,13 @@ if (isset($_GET['tahun'])) {
                                                 Jumlah Dompet
                                             </div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                4
+                                                <?php
+                                                    if($jumlahDompet === null || $jumlahDompet === false || !isset($jumlahDompet['total'])) {
+                                                        echo "0";
+                                                    } else {
+                                                        echo $jumlahDompet['total'];
+                                                    }
+                                                ?>
                                             </div>
                                         </div>
                                         <div class="col-auto">
@@ -332,7 +367,13 @@ if (isset($_GET['tahun'])) {
                                                 Tabungan (On Progress)
                                             </div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                3
+                                                <?php
+                                                    if($jumlahTabungan === null || $jumlahTabungan === false || !isset($jumlahTabungan['total'])) {
+                                                        echo "0";
+                                                    } else {
+                                                        echo $jumlahTabungan['total'];
+                                                    }
+                                                ?>
                                             </div>
                                         </div>
                                         <div class="col-auto">
@@ -344,89 +385,94 @@ if (isset($_GET['tahun'])) {
                         </div>
                     </div>
                     <!-- End of Information Card -->
+
+                    <!-- Filter Laporan -->
+                    <div class="card mb-4">
+                        <div class="card-header" style="font-weight:bold; font-size:20px;">
+                            Laporan Pemasukan & Pengeluaran
+                        </div>
+
+                        <div class="card-body">
+                            <p class="card-text">Filter Data <i class="fas fa-star-of-life" style="font-size: 7px; vertical-align: top; color: #ED2939"></i></p>
+                            <form method="GET" action="">
+                                <div class="d-flex align-items-center">
+                                    <div class="form-group mr-3">
+                                        <select name="tahun" class="form-select form-control" required>
+                                            <option value=""  selected disabled>-- Pilih Tahun --</option>
+                                            <?php while($row = $years_result->fetch_assoc()): ?>
+                                                <option value="<?php echo $row['year']; ?>"><?php echo $row['year']; ?></option>
+                                            <?php endwhile; ?>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary rounded-pill" style="margin-top: -17px;">Tampilkan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- End of Filter Laporan -->
+
+                    <!-- Laporan Pemasukan & Pengeluaran -->
+                    <?php if (isset($pemasukan_result) && isset($pengeluaran_result)): ?>
+                        <div class="card"">
+                            <div class="card-header" style="font-weight:bold; font-size:20px;">
+                                Laporan Pemasukan & Pengeluaran
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title font-weight-bold">Pemasukan</h5>
+                                <table class="table table-bordered"">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th scope="col">Bulan</th>
+                                            <th scope="col">Jumlah Transaksi</th>
+                                            <th scope="col">Pemasukan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php while($row = $pemasukan_result->fetch_assoc()): ?>
+                                            <tr>
+                                                <td><?php echo (strftime('%B', strtotime($row['bulan']))) ?></td>
+                                                <td><?php echo $row['jumlah_transaksi']; ?></td>
+                                                <td><?php echo rupiahFormat($row ['total_pemasukan']); ?></td>
+                                            </tr>
+                                        <?php endwhile; ?>
+                                        <tr>
+                                            <td><b>Total</b></td>
+                                            <td><b><?php echo $totaltransaksipemasukan; ?></b></td>
+                                            <td><b><?php echo rupiahFormat($totalpemasukan); ?></b></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <h5 class="card-title font-weight-bold mt-4">Pengeluaran</h5>
+                                <table class="table table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th scope="col">Bulan</th>
+                                            <th scope="col">Jumlah Transaksi</th>
+                                            <th scope="col">Pengeluaran</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php while($row = $pengeluaran_result->fetch_assoc()): ?>
+                                            <tr>
+                                                <td><?php echo (strftime('%B', strtotime($row['bulan']))) ?></td>
+                                                <td><?php echo $row['jumlah_transaksi']; ?></td>
+                                                <td><?php echo rupiahFormat($row['total_pengeluaran']); ?></td>
+                                            </tr>
+                                        <?php endwhile; ?>
+                                        <tr>
+                                            <td><b>Total</b></td>
+                                            <td><b><?php echo $totaltransaksipengeluaran; ?></b></td>
+                                            <td><b><?php echo rupiahFormat($total_pengeluaran); ?></b></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    <!-- End of Laporan -->
                 </div>
                 <!-- End of Container -->
-                <div class="card" style="width: 78rem; margin-left: 25px;">
-                    <div class="card-header" style="font-weight:bold; font-size:20px;">
-                        Laporan Pemasukan & Pengeluaran
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text">Filter Data *</p>
-                        <form method="GET" action="">
-                            <div class="d-flex align-items-center">
-                                <div class="form-group" style="width:160px; margin-right: 10px;">
-                                    <select name="tahun" class="form-select form-control">
-                                        <option selected disabled>--Pilih Tahun--</option>
-                                        <?php while($row = $years_result->fetch_assoc()): ?>
-                                            <option value="<?php echo $row['year']; ?>"><?php echo $row['year']; ?></option>
-                                        <?php endwhile; ?>
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-primary" style="margin-top: -17px;">Tampilkan</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <?php if (isset($pemasukan_result) && isset($pengeluaran_result)): ?>
-                <div class="card" style="width: 78rem; margin-left: 25px; margin-top: 20px;">
-                    <div class="card-header" style="font-weight:bold; font-size:20px;">
-                        Laporan Pemasukan & Pengeluaran
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Pemasukan</h5>
-                        <table class="table table-bordered"">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Bulan</th>
-                                    <th scope="col">Jumlah Transaksi</th>
-                                    <th scope="col">Pemasukan</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php while($row = $pemasukan_result->fetch_assoc()): ?>
-                                <tr>
-                                    <td><?php echo $row['bulan']; ?></td>
-                                    <td><?php echo $row['jumlah_transaksi']; ?></td>
-                                    <td><?php echo rupiahFormat($row ['total_pemasukan']); ?></td>
-                                </tr>
-                                <?php endwhile; ?>
-                            </tbody>
-                            <tr>
-                                <th><h5>Total</h5></th>
-                                <th><?php echo $totaltransaksipemasukan; ?></th>
-                                <th><?php echo rupiahFormat($totalpemasukan); ?></th>
-                            </tr>
-
-                        </table>
-                        
-                        <h5 class="card-title mt-4">Pengeluaran</h5>
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Bulan</th>
-                                    <th scope="col">Jumlah Transaksi</th>
-                                    <th scope="col">Pengeluaran</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php while($row = $pengeluaran_result->fetch_assoc()): ?>
-                                <tr>
-                                    <td><?php echo $row['bulan']; ?></td>
-                                    <td><?php echo $row['jumlah_transaksi']; ?></td>
-                                    <td><?php echo $row['total_pengeluaran']; ?></td>
-                                </tr>
-                                <?php endwhile; ?>
-                            </tbody>
-                            <tr>
-                            <th><h5>Total</h5></th>
-                                <th><?php echo $totaltransaksipengeluaran; ?></th>
-                                <th><?php echo rupiahFormat($total_pengeluaran); ?></th>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-                <?php endif; ?>
 
                 <!-- Footer -->
                 <footer class="sticky-footer bg-white">
@@ -437,8 +483,8 @@ if (isset($_GET['tahun'])) {
                     </div>
                 </footer>
                 <!-- End of Footer -->
-
-
+            </div>
+            <!-- End of Content -->
         </div>
         <!-- End of Content Wrapper -->
     </div>
@@ -464,7 +510,7 @@ if (isset($_GET['tahun'])) {
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">
                         Cancel
                     </button>
-                    <a class="btn btn-primary" href="login-page.php">Logout</a>
+                    <a class="btn btn-primary" href="ExeFiles/logout-exe.php">Logout</a>
                 </div>
             </div>
         </div>

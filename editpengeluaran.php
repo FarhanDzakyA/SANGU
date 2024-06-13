@@ -1,5 +1,8 @@
 <?php
-    session_start();
+    include "ExeFiles/session-check.php";
+?>
+
+<?php
     include "ExeFiles/koneksi.php";
 
     $id = $_SESSION['id_pengguna'];
@@ -24,7 +27,7 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
     
-    <title>SANGU - Edit Pemasukan</title>
+    <title>SANGU - Edit Pengeluaran</title>
 
     <link rel="icon" href="Assets/img/favicon.ico">
 
@@ -65,7 +68,7 @@
             <div class="sidebar-heading">Transaksi</div>
 
             <!-- Pemasukan -->
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="pemasukan-page.php">
                     <i class="fa-solid fa-fw fa-money-check-dollar"></i>
                     <span>Pemasukan</span>
@@ -73,7 +76,7 @@
             </li>
 
             <!-- Pengeluaran -->
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link" href="pengeluaran-page.php">
                     <i class="fa-solid fa-fw fa-money-bill-transfer"></i>
                     <span>Pengeluaran</span>
@@ -95,7 +98,7 @@
 
             <!-- Tabungan Berencana -->
             <li class="nav-item">
-                <a class="nav-link" href="">
+                <a class="nav-link" href="tabunganberencana-page.php">
                     <i class="fa-solid fa-fw fa-piggy-bank"></i>
                     <span>Tabungan Berencana</span>
                 </a>
@@ -114,11 +117,9 @@
             <div id="content">
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <form class="form-inline">
-                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                            <i class="fa-solid fa-bars"></i>
-                        </button>
-                    </form>
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
 
                     <!-- Current Page Indication -->
                     <div class="d-flex align-items-center">
@@ -129,7 +130,7 @@
 
                         <i class="fa-solid fa-fw fa-angle-right" style="color: #6e707e"></i>
 
-                        <a class="nav-link d-flex align-items-center" href="editpengeluaran.php">
+                        <a class="nav-link d-flex align-items-center" href="editpengeluaran.php?update=<?= $_GET['update'] ?>">
                             <i class="fa-solid fa-fw fa-pen mr-2" style="color: #6e707e"></i>
                             <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Edit Pengeluaran</h4>
                         </a>
@@ -230,31 +231,52 @@
                                     $jumlah = str_replace('.', '', $jumlah);
                                     $jumlah = (int)$jumlah;
 
-                                    $query_update = mysqli_query($mysqli, "UPDATE `pengeluaran` SET 
-                                    `tanggal_pengeluaran`='$date',
-                                    `kategori_pengeluaran`='$id_kategori',
-                                    `deskripsi_pengeluaran`='$deskripsi',
-                                    `jumlah_pengeluaran`='$jumlah',
-                                    `id_dompet`='$id_dompet' 
-                                    WHERE `id_pengeluaran`='$id_pengeluaran'");
+                                    $query_saldo = mysqli_query($mysqli, "SELECT saldo FROM `dompet` WHERE id_dompet = '$id_dompet'");
+                                    $result_saldo = mysqli_fetch_assoc($query_saldo);
+                                    $saldo_dompet = $result_saldo['saldo'] + $result['jumlah_pengeluaran'];
 
-                                    if($query_update) {
+                                    if($saldo_dompet >= $jumlah) {
+                                        $query_update = mysqli_query($mysqli, "UPDATE `pengeluaran` SET 
+                                        `tanggal_pengeluaran`='$date',
+                                        `kategori_pengeluaran`='$id_kategori',
+                                        `deskripsi_pengeluaran`='$deskripsi',
+                                        `jumlah_pengeluaran`='$jumlah',
+                                        `id_dompet`='$id_dompet' 
+                                        WHERE `id_pengeluaran`='$id_pengeluaran'");
+    
+                                        if($query_update) {
+                                            ?>
+    
+                                            <script>
+                                                Swal.fire({
+                                                    title: "Berhasil!",
+                                                    text: "Data Pengeluaran Berhasil Diubah!",
+                                                    icon: "success"
+                                                }).then(function() {
+                                                    window.location.href = 'pengeluaran-page.php';
+                                                });
+                                            </script>
+    
+                                            <?php
+                                        } else {
+                                            echo "Error: " . $query_insert . "<br>" . mysqli_error($mysqli);
+                                        }
+                                    } else {
                                         ?>
-
+    
                                         <script>
                                             Swal.fire({
-                                                title: "Berhasil!",
-                                                text: "Data Pengeluaran Berhasil Diubah!",
-                                                icon: "success"
+                                                title: "Gagal!",
+                                                text: "Saldo Dompet Tidak Mencukupi!",
+                                                icon: "error"
                                             }).then(function() {
-                                                window.location.href = 'pengeluaran-page.php';
+                                                window.location.href = 'editpengeluaran.php?update=<?= $_GET['update'] ?>';
                                             });
                                         </script>
 
                                         <?php
-                                    } else {
-                                        echo "Error: " . $query_insert . "<br>" . mysqli_error($mysqli);
                                     }
+
                                 }
                             ?>
                         </div>
@@ -294,7 +316,7 @@
                 <div class="modal-body">Pilih "Logout" di bawah jika Anda yakin untuk mengakhiri sesi Anda saat ini.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login-page.php">Logout</a>
+                    <a class="btn btn-primary" href="ExeFiles/logout-exe.php">Logout</a>
                 </div>
             </div>
         </div>

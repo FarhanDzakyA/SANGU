@@ -1,6 +1,9 @@
 <?php
-session_start();
-include "ExeFiles/koneksi.php";
+    include "ExeFiles/session-check.php";
+?>
+
+<?php
+    include "ExeFiles/koneksi.php";
 
     $id = $_SESSION['id_pengguna'];
     $query_dompet = mysqli_query($mysqli, "SELECT * FROM `dompet` WHERE id_pengguna = '$id'");
@@ -20,7 +23,7 @@ include "ExeFiles/koneksi.php";
     <meta name="description" content="" />
     <meta name="author" content="" />
 
-    <title>SANGU - Tambah Dompet</title>
+    <title>SANGU - Tambah Pengeluaran</title>
 
     <link rel="icon" href="Assets/img/favicon.ico">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
@@ -89,7 +92,7 @@ include "ExeFiles/koneksi.php";
 
             <!-- Tabungan Berencana -->
             <li class="nav-item">
-                <a class="nav-link" href="">
+                <a class="nav-link" href="tabunganberencana-page.php">
                     <i class="fa-solid fa-fw fa-piggy-bank"></i>
                     <span>Tabungan Berencana</span>
                 </a>
@@ -108,22 +111,20 @@ include "ExeFiles/koneksi.php";
             <div id="content">
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <form class="form-inline">
-                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                            <i class="fa-solid fa-bars"></i>
-                        </button>
-                    </form>
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
 
                     <!-- Current Page Indication -->
                     <div class="d-flex align-items-center">
                         <a class="nav-link d-flex align-items-center" href="pengeluaran-page.php">
-                            <i class="fa-solid fa-fw fa-money-bill-transfer" style="color: #6e707e"></i>
+                            <i class="fa-solid fa-fw fa-money-bill-transfer mr-2" style="color: #6e707e"></i>
                             <h4 class="h4 mb-0 text-gray-700 font-weight-bold"> Pengeluaran</h4>
                         </a>
 
                         <i class="fa-solid fa-fw fa-angle-right" style="color: #6e707e"></i>
 
-                        <a class="nav-link d-flex align-items-center" href="tambah-pengeluaran.php">
+                        <a class="nav-link d-flex align-items-center" href="tambahpengeluaran.php">
                             <i class="fa-solid fa-fw fa-plus mr-2" style="color: #6e707e"></i>
                             <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Tambah Pengeluaran</h4>
                         </a>
@@ -162,19 +163,19 @@ include "ExeFiles/koneksi.php";
                                 <!-- date -->
                                 <div class="form-group">
                                     <label for="date">Tanggal <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
-                                    <input type="date" id="date" name="date" class="form-control" value="<?= date('Y-m-d'); ?>" max="<?= date('Y-m-d'); ?>" required>
+                                    <input type="date" id="date" name="date" class="form-control" value="<?= isset($_SESSION['prev_date']) ? $_SESSION['prev_date'] : date(('Y-m-d')); ?>" max="<?= date('Y-m-d'); ?>" required>
                                 </div>
                                 
                                 <!-- description -->
                                 <div class="form-group">
                                     <label for="deskripsi">Deskripsi <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
-                                    <input type="text" id="deskripsi" name="deskripsi" class="form-control" placeholder="Masukkan deskripsi pengeluaran ..." required>
+                                    <input type="text" id="deskripsi" name="deskripsi" class="form-control" placeholder="Masukkan deskripsi pengeluaran ..." value="<?= isset($_SESSION['prev_deskripsi']) ? $_SESSION['prev_deskripsi'] : '' ?>" required>
                                 </div>
 
                                 <!-- amount -->
                                 <div class="form-group">
                                     <label for="jumlah">Jumlah pengeluaran <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
-                                    <input type="text" id="jumlah" name="jumlah" class="form-control" placeholder="Masukkan jumlah pengeluaran ..." value="Rp " onkeyup="formatRupiah(this)" required>
+                                    <input type="text" id="jumlah" name="jumlah" class="form-control" placeholder="Masukkan jumlah pengeluaran ..." value="<?= isset($_SESSION['prev_jumlah']) ? rupiahFormat($_SESSION['prev_jumlah']) : '' ?>" onkeyup="formatRupiah(this)" required>
                                 </div>
                                 
                                 <!-- dompet -->
@@ -183,7 +184,7 @@ include "ExeFiles/koneksi.php";
                                     <select id="dompet" name="dompet" class="form-select form-control" required>
                                         <option value="" selected disabled>-- Pilih Dompet --</option>
                                         <?php while($dompet = mysqli_fetch_assoc($query_dompet)) { ?>
-                                            <option value="<?= $dompet['id_dompet'] ?>"><?= $dompet['nama_dompet'] ?> -- <?= rupiahFormat($dompet['saldo']) ?></option>
+                                            <option value="<?= $dompet['id_dompet'] ?>" <?= isset($_SESSION['prev_dompet']) && $_SESSION['prev_dompet'] == $dompet['id_dompet'] ? 'selected' : '' ?>><?= $dompet['nama_dompet'] ?> -- <?= rupiahFormat($dompet['saldo']) ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
@@ -194,16 +195,24 @@ include "ExeFiles/koneksi.php";
                                     <select id="kategori" name="kategori" class="form-select form-control" required>
                                         <option value="" selected disabled>-- Pilih Kategori --</option>
                                         <?php while($kategori = mysqli_fetch_assoc($query_kategori)) { ?>
-                                            <option value="<?= $kategori['id_kategori'] ?>"><?= $kategori['nama_kategori'] ?></option>
+                                            <option value="<?= $kategori['id_kategori'] ?>" <?= isset($_SESSION['prev_kategori']) && $_SESSION['prev_kategori'] == $kategori['id_kategori'] ? 'selected' : '' ?>><?= $kategori['nama_kategori'] ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
+
+                                <?php 
+                                    unset($_SESSION['prev_date']);
+                                    unset($_SESSION['prev_deskripsi']);
+                                    unset($_SESSION['prev_jumlah']);
+                                    unset($_SESSION['prev_dompet']);
+                                    unset($_SESSION['prev_kategori']);
+                                ?>
 
                                 <!-- tombol -->
                                 <div class="d-flex align-items-center justify-content-start">
                                     <button type="submit" name="btn-simpan" class="btn btn-primary">Simpan</button>
                                     <span class="mr-2"></span>
-                                    <a href="pengeluaran-page.php" class="btn btn-secondary">Batalkan</a>
+                                    <a href="pengeluaran-page.php" class="btn btn-secondary">Batal</a>
                                 </div>
                             </form>
 
@@ -220,27 +229,53 @@ include "ExeFiles/koneksi.php";
                                     $jumlah = str_replace('.', '', $jumlah);
                                     $jumlah = (int)$jumlah;
 
-                                    $query_insert = mysqli_query($mysqli, "INSERT INTO `pengeluaran`
-                                    (`tanggal_pengeluaran`, `kategori_pengeluaran`, `deskripsi_pengeluaran`, 
-                                    `jumlah_pengeluaran`, `id_pengguna`, `id_dompet`) VALUES ('$date', 
-                                    '$id_kategori', '$deskripsi', '$jumlah', '$id_pengguna', '$id_dompet')");
+                                    $query_saldo = mysqli_query($mysqli, "SELECT saldo FROM `dompet` WHERE id_dompet = '$id_dompet'");
+                                    $result_saldo = mysqli_fetch_assoc($query_saldo);
+                                    $saldo_dompet = $result_saldo['saldo'];
 
-                                    if($query_insert) {
+                                    if($saldo_dompet >= $jumlah) {
+
+                                        $query_insert = mysqli_query($mysqli, "INSERT INTO `pengeluaran`
+                                        (`tanggal_pengeluaran`, `kategori_pengeluaran`, `deskripsi_pengeluaran`, 
+                                        `jumlah_pengeluaran`, `id_pengguna`, `id_dompet`) VALUES ('$date', 
+                                        '$id_kategori', '$deskripsi', '$jumlah', '$id_pengguna', '$id_dompet')");
+    
+                                        if($query_insert) {
+                                            ?>
+    
+                                            <script>
+                                                Swal.fire({
+                                                    title: "Berhasil!",
+                                                    text: "Data Pengeluaran Berhasil Ditambahkan!",
+                                                    icon: "success"
+                                                }).then(function() {
+                                                    window.location.href = 'pengeluaran-page.php';
+                                                });
+                                            </script>
+    
+                                            <?php
+                                        } else {
+                                            echo "Error: " . $query_insert . "<br>" . mysqli_error($mysqli);
+                                        }
+                                    } else {
+                                        $_SESSION['prev_date'] = $date;
+                                        $_SESSION['prev_deskripsi'] = $deskripsi;
+                                        $_SESSION['prev_jumlah'] = $jumlah;
+                                        $_SESSION['prev_dompet'] = $id_dompet;
+                                        $_SESSION['prev_kategori'] = $id_kategori;
                                         ?>
-
+    
                                         <script>
                                             Swal.fire({
-                                                title: "Berhasil!",
-                                                text: "Data Pengeluaran Berhasil Ditambahkan!",
-                                                icon: "success"
+                                                title: "Gagal!",
+                                                text: "Saldo Dompet Tidak Mencukupi!",
+                                                icon: "error"
                                             }).then(function() {
-                                                window.location.href = 'pengeluaran-page.php';
+                                                window.location.href = 'tambahpengeluaran.php';
                                             });
                                         </script>
 
                                         <?php
-                                    } else {
-                                        echo "Error: " . $query_insert . "<br>" . mysqli_error($mysqli);
                                     }
                                 }
                             ?>
@@ -281,7 +316,7 @@ include "ExeFiles/koneksi.php";
                 <div class="modal-body">Pilih "Logout" di bawah jika Anda yakin untuk mengakhiri sesi Anda saat ini.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login-page.php">Logout</a>
+                    <a class="btn btn-primary" href="ExeFiles/logout-exe.php">Logout</a>
                 </div>
             </div>
         </div>

@@ -10,6 +10,10 @@
     unset($_SESSION['pass']);
     unset($_SESSION['confirmPass']);
     unset($_SESSION['invalidRegis']);
+
+    if(isset($_SESSION['login'])) {
+        header("Location: dashboard.php");
+    }
 ?>
 
 <!DOCTYPE html>

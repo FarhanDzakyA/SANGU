@@ -1,9 +1,16 @@
 <?php
-    session_start();
+    include "ExeFiles/session-check.php";
+?>
+
+<?php
     include "ExeFiles/koneksi.php";
 
     $query_select = mysqli_query($mysqli, "SELECT * FROM `dompet` WHERE `id_dompet` = '$_GET[update]'");
     $result = mysqli_fetch_assoc($query_select);
+
+    function rupiahFormat($number) {
+        return 'Rp ' . number_format($number, 0, ',', '.');
+    }
 ?>
 
 <!DOCTYPE html>
@@ -109,11 +116,9 @@
             <div id="content">
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <form class="form-inline">
-                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                            <i class="fa-solid fa-bars"></i>
-                        </button>
-                    </form>
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
 
                     <!-- Current Page Indication -->
                      <div class="d-flex align-items-center">
@@ -124,7 +129,7 @@
 
                          <i class="fa-solid fa-fw fa-angle-right" style="color: #6e707e"></i>
 
-                         <a class="nav-link d-flex align-items-center" href="editdompet.php">
+                         <a class="nav-link d-flex align-items-center" href="editdompet.php?update=<?= $_GET['update'] ?>">
                              <i class="fa-solid fa-fw fa-pen mr-2" style="color: #6e707e"></i>
                              <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Edit Dompet</h4>
                          </a>
@@ -168,14 +173,14 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="saldo">Saldo Awal <i class="fas fa-star-of-life" style="font-size: 7px; vertical-align: top; color: #ED2939"></i></label>
-                                    <input type="text" id="saldo" name="saldo" class="form-control" placeholder="Masukkan saldo awal dompet Anda..." onkeyup="formatRupiah(this)" value="<?= $result['saldo'] ?>" required>
+                                    <label for="saldo">Saldo <i class="fas fa-star-of-life" style="font-size: 7px; vertical-align: top; color: #ED2939"></i></label>
+                                    <input type="text" id="saldo" name="saldo" class="form-control" placeholder="Masukkan saldo awal dompet Anda..." onkeyup="formatRupiah(this)" value="<?= rupiahFormat($result['saldo']) ?>" readonly>
                                 </div>
 
                                 <div class="d-sm-flex align-items-center justify-content-start">
                                     <button type="submit" name="btn-simpan" class="btn btn-primary">Simpan</button>
                                     <span class="mr-2"></span>
-                                    <a href="dompet-page.php" class="btn btn-secondary">Batalkan</a>
+                                    <a href="dompet-page.php" class="btn btn-secondary">Batal</a>
                                 </div>
                             </form>
 
@@ -255,7 +260,7 @@
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">
                         Cancel
                     </button>
-                    <a class="btn btn-primary" href="login-page.php">Logout</a>
+                    <a class="btn btn-primary" href="ExeFiles/logout-exe.php">Logout</a>
                 </div>
             </div>
         </div>

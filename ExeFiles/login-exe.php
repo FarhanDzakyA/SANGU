@@ -17,6 +17,7 @@
                 $_SESSION['id_pengguna'] = $row['id_pengguna'];
     
                 if(password_verify($pass, $hashedPass)) {
+                    $_SESSION['login'] = true;
 
                     header("Location: ../dashboard.php");
                     exit();

@@ -1,5 +1,8 @@
 <?php
-    session_start();
+    include "ExeFiles/session-check.php";
+?>
+
+<?php
     include "ExeFiles/koneksi.php";
 
     $id = $_SESSION['id_pengguna'];
@@ -91,7 +94,7 @@
 
             <!-- Tabungan Berencana -->
             <li class="nav-item">
-                <a class="nav-link" href="">
+                <a class="nav-link" href="tabunganberencana-page.php">
                     <i class="fa-solid fa-fw fa-piggy-bank"></i>
                     <span>Tabungan Berencana</span>
                 </a>
@@ -110,11 +113,9 @@
             <div id="content">
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <form class="form-inline">
-                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                            <i class="fa-solid fa-bars"></i>
-                        </button>
-                    </form>
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
 
                     <!-- Current Page Indication -->
                     <div class="d-flex align-items-center">
@@ -125,7 +126,7 @@
 
                         <i class="fa-solid fa-fw fa-angle-right" style="color: #6e707e"></i>
 
-                        <a class="nav-link d-flex align-items-center" href="tambah-pemasukan.php">
+                        <a class="nav-link d-flex align-items-center" href="tambahpemasukan.php">
                             <i class="fa-solid fa-fw fa-plus mr-2" style="color: #6e707e"></i>
                             <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Tambah Pemasukan</h4>
                         </a>
@@ -176,7 +177,7 @@
                                 <!-- amount -->
                                 <div class="form-group">
                                     <label for="jumlah">Jumlah Pemasukan <i class="fas fa-star-of-life text-danger" style="font-size: 7px; vertical-align: top;"></i></label>
-                                    <input type="text" id="jumlah" name="jumlah" class="form-control" placeholder="Masukkan jumlah pemasukan ..." value="Rp " onkeyup="formatRupiah(this)" required>
+                                    <input type="text" id="jumlah" name="jumlah" class="form-control" placeholder="Masukkan jumlah pemasukan ..." onkeyup="formatRupiah(this)" required>
                                 </div>
                                 
                                 <!-- dompet -->
@@ -205,7 +206,7 @@
                                 <div class="d-flex align-items-center justify-content-start">
                                     <button type="submit" name="btn-simpan" class="btn btn-primary">Simpan</button>
                                     <span class="mr-2"></span>
-                                    <a href="pemasukan-page.php" class="btn btn-secondary">Batalkan</a>
+                                    <a href="pemasukan-page.php" class="btn btn-secondary">Batal</a>
                                 </div>
                             </form>
 
@@ -283,7 +284,7 @@
                 <div class="modal-body">Pilih "Logout" di bawah jika Anda yakin untuk mengakhiri sesi Anda saat ini.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login-page.php">Logout</a>
+                    <a class="btn btn-primary" href="ExeFiles/logout-exe.php">Logout</a>
                 </div>
             </div>
         </div>

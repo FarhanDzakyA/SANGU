@@ -1,5 +1,8 @@
 <?php
-    session_start();
+    include "ExeFiles/session-check.php";
+?>
+
+<?php
     include "ExeFiles/koneksi.php";
 
     $id_pengguna = $_SESSION['id_pengguna'];
@@ -117,11 +120,9 @@
             <div id="content">
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <form class="form-inline">
-                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                            <i class="fa-solid fa-bars"></i>
-                        </button>
-                    </form>
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
 
                     <!-- Current Page Indication -->
                     <a class="nav-link d-flex align-items-center" href="tabunganberencana-page.php">
@@ -179,17 +180,19 @@
                                         <div class="card-body">
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col mr-2">
-                                                    <div class="text-lg text-center font-weight-bold text-info text-uppercase mb-1"><?=$result['rencana'];?></div>
+                                                    <div class="text-lg text-center font-weight-bold text-dark text-uppercase mb-1"><?=$result['rencana'];?></div>
                                                     <div class="row no-gutters align-items-center">
                                                         <div class="col-6">
-                                                            <h4 class="small font-weight-bold"><?=rupiahFormat($result['tertabung']);?></h4>
+                                                            <h4 class="small font-weight-bold mb-0">Terkumpul</h4>
+                                                            <span class="small font-weight-bold"><?=rupiahFormat($result['tertabung']);?></span>
                                                         </div>
                                                         <div class="col-6 text-right">
+                                                            <h4 class="small font-weight-bold mb-0">Target</h4>
                                                             <span class="small font-weight-bold"><?=rupiahFormat($result['target']);?></span>
                                                         </div>
                                                     </div>
                                                     <div class="progress mb-1">
-                                                        <div class="progress-bar bg-danger" role="progressbar" style="width: <?=$progress_persen?>%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><?= $progress_persen ?>%</div>
+                                                        <div class="progress-bar bg-success" role="progressbar" style="width: <?=$progress_persen?>%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><?= $progress_persen ?>%</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -211,17 +214,17 @@
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title">Deposit</h5>
-                                                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">x</button>
                                             </div>
                                             <div class="modal-body">
                                                 <!-- Form for adding amount -->
                                                 <form method="POST" action="">
                                                     <div class="mb-3">
-                                                        <label for="amountToAdd<?=$result['id_rencana'];?>" class="form-label">Banyak yang akan disimpan</label>
+                                                        <label for="amountToAdd<?=$result['id_rencana'];?>" class="form-label">Tambah Saldo</label>
                                                         <input type="text" class="form-control" id="amountToAdd<?=$result['id_rencana'];?>" name="amountToAdd" onkeyup="formatRupiah(this, <?=$remaining_amount;?>)" data-remaining-amount="<?=$remaining_amount;?>">
                                                     </div>
                                                     <input type="hidden" name="id_rencana" value="<?=$result['id_rencana'];?>">
-                                                    <button type="submit" class="btn btn-primary" id="submitPlus<?=$result['id_rencana'];?>" name="btn-depo" disabled>Submit</button>
+                                                    <button type="submit" class="btn btn-primary" id="submitPlus<?=$result['id_rencana'];?>" name="btn-depo" disabled>Tambah</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -233,16 +236,16 @@
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title">Withdraw</h5>
-                                                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">x</button>
                                             </div>
                                             <div class="modal-body">
                                                 <form action="" method="POST">
                                                     <div class="mb-3">
-                                                        <label for="amountTolose<?=$result['id_rencana'];?>" class="form-label">Banyak yang akan dikeluarkan</label>
+                                                        <label for="amountTolose<?=$result['id_rencana'];?>" class="form-label">Tarik Saldo</label>
                                                         <input type="text" class="form-control" id="amountTolose<?=$result['id_rencana'];?>" name="amountTolose" onkeyup="formatRupiahmin(this,<?=$result['tertabung'];?>)" data-remaining-amount="<?=$result['tertabung']?>">
                                                     </div>
                                                     <input type="hidden" name="id_rencana" value="<?=$result['id_rencana'];?>">
-                                                    <button type="submit" class="btn btn-primary" id="submitMin<?=$result['id_rencana'];?>" name="btn-wit" disabled>submit</button>
+                                                    <button type="submit" class="btn btn-primary" id="submitMin<?=$result['id_rencana'];?>" name="btn-wit" disabled>Tarik</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -319,7 +322,7 @@
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">
                         Cancel
                     </button>
-                    <a class="btn btn-primary" href="login-page.php">Logout</a>
+                    <a class="btn btn-primary" href="ExeFiles/logout-exe.php">Logout</a>
                 </div>
             </div>
         </div>

@@ -1,6 +1,11 @@
 <?php
-    session_start();
+    include "ExeFiles/session-check.php";
+?>
+
+<?php
     include "ExeFiles/koneksi.php";
+
+    setlocale(LC_ALL, 'IND');
 
     $id_pengguna = $_SESSION['id_pengguna'];
 
@@ -103,7 +108,7 @@
 
             <!-- Tabungan Berencana -->
             <li class="nav-item">
-                <a class="nav-link" href="">
+                <a class="nav-link" href="tabunganberencana-page.php">
                     <i class="fa-solid fa-fw fa-piggy-bank"></i>
                     <span>Tabungan Berencana</span>
                 </a>
@@ -122,11 +127,9 @@
             <div id="content">
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <form class="form-inline">
-                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                            <i class="fa-solid fa-bars"></i>
-                        </button>
-                    </form>
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
 
                     <!-- Current Page Indication -->
                     <a class="nav-link d-flex align-items-center" href="pemasukan-page.php">
@@ -188,7 +191,7 @@
                                         <?php while($result = mysqli_fetch_assoc($query_table)) { ?>
                                         <tr>
                                             <td><?= $number ?></td>
-                                            <td><?= $result['tanggal_pemasukan'] ?></td>
+                                            <td><?= strftime('%A, %d %B %Y', strtotime($result['tanggal_pemasukan'])) ?></td>
                                             <td><?= $result['deskripsi_pemasukan'] ?></td>
                                             <td><?= $result['nama_kategori'] ?></td>
                                             <td><?= rupiahFormat($result['jumlah_pemasukan']) ?></td>
@@ -281,7 +284,7 @@
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">
                         Cancel
                     </button>
-                    <a class="btn btn-primary" href="login-page.php">Logout</a>
+                    <a class="btn btn-primary" href="ExeFiles/logout-exe.php">Logout</a>
                 </div>
             </div>
         </div>

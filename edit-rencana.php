@@ -1,9 +1,16 @@
 <?php
-    session_start();
+    include "ExeFiles/session-check.php";
+?>
+
+<?php
     include "ExeFiles/koneksi.php";
     $id = $_GET['update'];
     $query_select = mysqli_query($mysqli, "SELECT * FROM `rencana` WHERE id_rencana = '$_GET[update]'");
     $result = mysqli_fetch_assoc($query_select);
+
+    function rupiahFormat($number) {
+        return 'Rp ' . number_format($number, 0, ',', '.');
+    }
 ?>
 
 <!DOCTYPE html>
@@ -15,7 +22,7 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
 
-    <title>SANGU - Tambah Rencana</title>
+    <title>SANGU - Edit Rencana</title>
 
     <link rel="icon" href="Assets/img/favicon.ico">
 
@@ -124,7 +131,7 @@
 
                          <i class="fa-solid fa-fw fa-angle-right" style="color: #6e707e"></i>
 
-                         <a class="nav-link d-flex align-items-center" href="#">
+                         <a class="nav-link d-flex align-items-center" href="edit-rencana.php?update=<?= $_GET['update'] ?>">
                             <i class="fa-solid fa-fw fa-pen mr-2" style="color: #6e707e"></i>
                              <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Edit Rencana</h4>
                          </a>
@@ -151,13 +158,13 @@
                 
                 <div class="container-fluid">
                     <!-- Page Heading -->
-                    <h3 class="h3 mb-4 text-gray-800">Tambah Rencana</h3>
+                    <h3 class="h3 mb-4 text-gray-800">Edit Rencana</h3>
 
                     <!-- Form Card -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
                             <h5 class="m-0 font-weight-bold text-primary">
-                                Tambah Rencana
+                                Edit Rencana
                             </h5>
                         </div>
                         <div class="card-body">
@@ -169,13 +176,13 @@
 
                                 <div class="form-group">
                                     <label for="target">Target<i class="fas fa-star-of-life" style="font-size: 7px; vertical-align: top; color: #ED2939"></i></label>
-                                    <input type="text" id="saldo" name="target" class="form-control" placeholder="Masukkan target yang ingin dicapai..." onkeyup="formatRupiah(this)" value="<?=$result['target']?>" required>
+                                    <input type="text" id="saldo" name="target" class="form-control" placeholder="Masukkan target yang ingin dicapai..." onkeyup="formatRupiah(this)" value="<?= rupiahFormat($result['target']) ?>" required>
                                 </div>
 
                                 <div class="d-sm-flex align-items-center justify-content-start">
                                     <button type="submit" name="btn-simpan" class="btn btn-primary">Simpan</button>
                                     <span class="mr-2"></span>
-                                    <a href="tabunganberencana-page.php" class="btn btn-secondary">Batalkan</a>
+                                    <a href="tabunganberencana-page.php" class="btn btn-secondary">Batal</a>
                                 </div>
                             </form>
 
@@ -252,7 +259,7 @@
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">
                         Cancel
                     </button>
-                    <a class="btn btn-primary" href="login-page.php">Logout</a>
+                    <a class="btn btn-primary" href="ExeFiles/logout-exe.php">Logout</a>
                 </div>
             </div>
         </div>

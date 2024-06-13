@@ -1,5 +1,8 @@
 <?php
-    session_start();
+    include "ExeFiles/session-check.php";
+?>
+
+<?php
     include "ExeFiles/koneksi.php";
 
     $id = $_SESSION['id_pengguna'];
@@ -95,7 +98,7 @@
 
             <!-- Tabungan Berencana -->
             <li class="nav-item">
-                <a class="nav-link" href="">
+                <a class="nav-link" href="tabunganberencana-page.php">
                     <i class="fa-solid fa-fw fa-piggy-bank"></i>
                     <span>Tabungan Berencana</span>
                 </a>
@@ -129,7 +132,7 @@
 
                         <i class="fa-solid fa-fw fa-angle-right" style="color: #6e707e"></i>
 
-                        <a class="nav-link d-flex align-items-center" href="tambah-pemasukan.php">
+                        <a class="nav-link d-flex align-items-center" href="editpemasukan.php?update=<?= $_GET['update'] ?>">
                             <i class="fa-solid fa-fw fa-pen mr-2" style="color: #6e707e"></i>
                             <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Edit Pemasukan</h4>
                         </a>
@@ -294,7 +297,7 @@
                 <div class="modal-body">Pilih "Logout" di bawah jika Anda yakin untuk mengakhiri sesi Anda saat ini.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login-page.php">Logout</a>
+                    <a class="btn btn-primary" href="ExeFiles/logout-exe.php">Logout</a>
                 </div>
             </div>
         </div>
