@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 11, 2024 at 04:21 PM
+-- Generation Time: Jun 13, 2024 at 10:30 AM
 -- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -39,11 +39,12 @@ CREATE TABLE `dompet` (
 --
 
 INSERT INTO `dompet` (`id_dompet`, `nama_dompet`, `saldo`, `id_pengguna`) VALUES
-(1, 'Gopay', 100000, 1),
-(2, 'Cash', 50000, 1),
+(1, 'Gopay', 3050000, 1),
+(2, 'Cash uwiw', 1540000, 1),
 (5, 'Faiz', 2, 3),
 (6, 'Andra', 11, 3),
-(7, 'Satriani', 1, 3);
+(7, 'Satriani', 1, 3),
+(8, 'Shopee Pay', 1000000, 1);
 
 -- --------------------------------------------------------
 
@@ -93,6 +94,21 @@ CREATE TABLE `pemasukan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Dumping data for table `pemasukan`
+--
+
+INSERT INTO `pemasukan` (`id_pemasukan`, `tanggal_pemasukan`, `kategori_pemasukan`, `deskripsi_pemasukan`, `jumlah_pemasukan`, `id_pengguna`, `id_dompet`) VALUES
+(3, '2024-06-13', 6, 'Uang Mamak', 120000, 1, 1),
+(6, '2024-06-01', 6, 'Uang Bulanan', 1500000, 1, 1),
+(7, '2024-06-02', 4, 'Freelance', 150000, 1, 2),
+(9, '2024-05-02', 6, 'Uang Bulanan', 1200000, 1, 2),
+(10, '2024-04-20', 1, 'Buat Beli Oleh Oleh', 500000, 1, 1),
+(11, '2024-05-16', 5, 'Uang Transport', 150000, 1, 2),
+(12, '2024-03-29', 3, 'Studi Lapangan', 3300000, 1, 1),
+(13, '2024-02-02', 3, 'Untuk Bayar UKT', 7400000, 1, 2),
+(14, '2024-01-16', 3, 'Beli Laptop + Jajan', 13000000, 1, 8);
+
+--
 -- Triggers `pemasukan`
 --
 DELIMITER $$
@@ -139,6 +155,19 @@ CREATE TABLE `pengeluaran` (
   `id_pengguna` int(11) NOT NULL,
   `id_dompet` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `pengeluaran`
+--
+
+INSERT INTO `pengeluaran` (`id_pengeluaran`, `tanggal_pengeluaran`, `kategori_pengeluaran`, `deskripsi_pengeluaran`, `jumlah_pengeluaran`, `id_pengguna`, `id_dompet`) VALUES
+(1, '2024-06-13', 9, 'Jajan', 70000, 1, 1),
+(2, '2024-06-13', 9, 'Jajan Pentol', 10000, 1, 2),
+(4, '2024-06-13', 13, 'wre', 30000, 1, 8),
+(5, '2024-03-30', 7, 'Bayar Studi Lapangan', 2350000, 1, 1),
+(6, '2024-02-05', 8, 'Bayar Ukt', 7400000, 1, 2),
+(7, '2024-01-23', 11, 'Beli Laptop Baru', 12000000, 1, 8),
+(8, '2024-05-30', 12, 'Bayar GOCAR', 50000, 1, 1);
 
 --
 -- Triggers `pengeluaran`
@@ -214,7 +243,9 @@ CREATE TABLE `rencana` (
 INSERT INTO `rencana` (`id_rencana`, `rencana`, `target`, `tertabung`, `id_pengguna`) VALUES
 (1, 'Beli BMW S1000R', 1000000000, 500000000, 3),
 (2, 'Beli Naspad', 20000, 10000, 3),
-(3, 'Beli Permen', 1000, 1, 3);
+(3, 'Beli Permen', 1000, 1, 3),
+(4, 'Beli Odol', 30000, 30000, 1),
+(6, 'Beli HP', 5000000, 0, 1);
 
 --
 -- Indexes for dumped tables
@@ -272,7 +303,7 @@ ALTER TABLE `rencana`
 -- AUTO_INCREMENT for table `dompet`
 --
 ALTER TABLE `dompet`
-  MODIFY `id_dompet` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_dompet` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `kategori`
@@ -284,13 +315,13 @@ ALTER TABLE `kategori`
 -- AUTO_INCREMENT for table `pemasukan`
 --
 ALTER TABLE `pemasukan`
-  MODIFY `id_pemasukan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_pemasukan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `pengeluaran`
 --
 ALTER TABLE `pengeluaran`
-  MODIFY `id_pengeluaran` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_pengeluaran` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `pengguna`
@@ -302,7 +333,7 @@ ALTER TABLE `pengguna`
 -- AUTO_INCREMENT for table `rencana`
 --
 ALTER TABLE `rencana`
-  MODIFY `id_rencana` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_rencana` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
