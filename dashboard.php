@@ -36,42 +36,37 @@
 
     $years_result = $mysqli->query($years_query);
 
-    if (isset($_GET['tahun'])) {
+    if (isset($_GET['btn-show'])) {
+        $bulan = $_GET['bulan'] ?? '';
         $tahun = $_GET['tahun'];
         
-        $pemasukan_query = "
-            SELECT
-                MONTHNAME(tanggal_pemasukan) AS bulan,
-                COUNT(id_pemasukan) AS jumlah_transaksi,
-                SUM(jumlah_pemasukan) AS total_pemasukan
-            FROM
-                pemasukan
-            WHERE
-                YEAR(tanggal_pemasukan) = $tahun
-            GROUP BY
-                MONTH(tanggal_pemasukan)
-            ORDER BY
-                MONTH(tanggal_pemasukan);
-        ";
+        if($bulan == '') {
+            $pemasukan_query = "
+                SELECT
+                    MONTHNAME(tanggal_pemasukan) AS bulan,
+                    COUNT(id_pemasukan) AS jumlah_transaksi,
+                    SUM(jumlah_pemasukan) AS total_pemasukan
+                FROM
+                    pemasukan
+                WHERE
+                    YEAR(tanggal_pemasukan) = $tahun
+                GROUP BY
+                    MONTH(tanggal_pemasukan)
+                ORDER BY
+                    MONTH(tanggal_pemasukan);
+            ";
 
-        $pemasukan_result = $mysqli->query($pemasukan_query);
-            
-        $totalpemasukan_query = "
+            $totalpemasukan_query = "
             SELECT
                 SUM(jumlah_pemasukan) AS totalpemasukan,
                 COUNT(id_pemasukan) AS totaltransaksipemasukan
             FROM
                 pemasukan
             WHERE
-                YEAR(tanggal_pemasukan) = $tahun;
-        ";
+                YEAR(tanggal_pemasukan) = '$tahun';
+            ";
 
-        $totalpemasukan_result = $mysqli->query($totalpemasukan_query);
-        $totalpemasukan_row = $totalpemasukan_result->fetch_assoc();
-        $totalpemasukan = $totalpemasukan_row['totalpemasukan'];
-        $totaltransaksipemasukan = $totalpemasukan_row['totaltransaksipemasukan'];
-            
-        $pengeluaran_query = "
+            $pengeluaran_query = "
             SELECT
                 MONTHNAME(tanggal_pengeluaran) AS bulan,
                 COUNT(id_pengeluaran) AS jumlah_transaksi,
@@ -79,24 +74,73 @@
             FROM
                 pengeluaran
             WHERE
-                YEAR(tanggal_pengeluaran) = $tahun
+                YEAR(tanggal_pengeluaran) = '$tahun'
             GROUP BY
                 MONTH(tanggal_pengeluaran)
             ORDER BY
                 MONTH(tanggal_pengeluaran);
-        ";
-        
-        $pengeluaran_result = $mysqli->query($pengeluaran_query);
-        
-        $pengeluaran_total_query = "
+            ";
+
+            $pengeluaran_total_query = "
             SELECT
                 SUM(jumlah_pengeluaran) AS total_pengeluaran,
                 COUNT(id_pengeluaran) AS totaltransaksipengeluaran
             FROM
                 pengeluaran
             WHERE
-                YEAR(tanggal_pengeluaran) = $tahun;
-        ";
+                YEAR(tanggal_pengeluaran) = '$tahun';
+            ";
+        } else {
+            $pemasukan_query = "
+                SELECT
+                    MONTHNAME(tanggal_pemasukan) AS bulan,
+                    COUNT(id_pemasukan) AS jumlah_transaksi,
+                    SUM(jumlah_pemasukan) AS total_pemasukan
+                FROM
+                    pemasukan
+                WHERE
+                    YEAR(tanggal_pemasukan) = '$tahun' AND MONTHNAME(tanggal_pemasukan) = '$bulan'
+            ";
+
+            $totalpemasukan_query = "
+            SELECT
+                SUM(jumlah_pemasukan) AS totalpemasukan,
+                COUNT(id_pemasukan) AS totaltransaksipemasukan
+            FROM
+                pemasukan
+            WHERE
+                YEAR(tanggal_pemasukan) = '$tahun' AND MONTHNAME(tanggal_pemasukan) = '$bulan'
+            ";
+
+            $pengeluaran_query = "
+            SELECT
+                MONTHNAME(tanggal_pengeluaran) AS bulan,
+                COUNT(id_pengeluaran) AS jumlah_transaksi,
+                SUM(jumlah_pengeluaran) AS total_pengeluaran
+            FROM
+                pengeluaran
+            WHERE
+                YEAR(tanggal_pengeluaran) = '$tahun' AND MONTHNAME(tanggal_pengeluaran) = '$bulan'
+            ";
+
+            $pengeluaran_total_query = "
+            SELECT
+                SUM(jumlah_pengeluaran) AS total_pengeluaran,
+                COUNT(id_pengeluaran) AS totaltransaksipengeluaran
+            FROM
+                pengeluaran
+            WHERE
+                YEAR(tanggal_pengeluaran) = '$tahun' AND MONTHNAME(tanggal_pengeluaran) = '$bulan'
+            ";
+        }
+
+        $pemasukan_result = $mysqli->query($pemasukan_query);
+        $totalpemasukan_result = $mysqli->query($totalpemasukan_query);
+        $totalpemasukan_row = $totalpemasukan_result->fetch_assoc();
+        $totalpemasukan = $totalpemasukan_row['totalpemasukan'];
+        $totaltransaksipemasukan = $totalpemasukan_row['totaltransaksipemasukan'];
+        
+        $pengeluaran_result = $mysqli->query($pengeluaran_query);
 
         $pengeluaran_total_result = $mysqli->query($pengeluaran_total_query);
         $pengeluaran_total_row = $pengeluaran_total_result->fetch_assoc();
@@ -397,6 +441,23 @@
                             <form method="GET" action="">
                                 <div class="d-flex align-items-center">
                                     <div class="form-group mr-3">
+                                        <select name="bulan" class="form-select form-control">
+                                            <option value="" selected disabled>-- Pilih Bulan --</option>
+                                            <option value="January">Januari</option>
+                                            <option value="February">Februari</option>
+                                            <option value="March">Maret</option>
+                                            <option value="April">April</option>
+                                            <option value="May">Mei</option>
+                                            <option value="June">Juni</option>
+                                            <option value="July">Juli</option>
+                                            <option value="August">Agustus</option>
+                                            <option value="September">September</option>
+                                            <option value="October">Oktober</option>
+                                            <option value="November">November</option>
+                                            <option value="December">Desember</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group mr-3">
                                         <select name="tahun" class="form-select form-control" required>
                                             <option value=""  selected disabled>-- Pilih Tahun --</option>
                                             <?php while($row = $years_result->fetch_assoc()): ?>
@@ -404,7 +465,7 @@
                                             <?php endwhile; ?>
                                         </select>
                                     </div>
-                                    <button type="submit" class="btn btn-primary rounded-pill" style="margin-top: -17px;">Tampilkan</button>
+                                    <button type="submit" class="btn btn-primary rounded-pill" name="btn-show" style="margin-top: -15px">Tampilkan</button>
                                 </div>
                             </form>
                         </div>
