@@ -114,7 +114,7 @@
                     </button>
 
                     <!-- Current Page Indication -->
-                     <div class="d-flex align-items-center">
+                     <div class="d-sm-flex d-none align-items-center">
                          <a class="nav-link d-flex align-items-center" href="tabunganberencana-page.php">
                             <i class="fa-solid fa-fw fa-piggy-bank mr-2" style="color: #6e707e"></i>
                             <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Tabungan Berencana</h4>
@@ -265,6 +265,13 @@
     <script src="Assets/js/sb-admin-2.min.js"></script>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const sidebar = document.getElementById('accordionSidebar');
+            if (!sidebar.classList.contains('toggled')) {
+                sidebar.classList.add('toggled');
+            }
+        });
+
         function formatRupiah(input) {
             let value = input.value.replace(/[^\d]/g, '');
 

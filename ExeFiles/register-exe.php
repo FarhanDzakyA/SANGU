@@ -24,7 +24,7 @@
                 unset($_SESSION['pass']);
                 unset($_SESSION['confirmPass']);
 
-                header("Location: ../login-page.php");
+                header("Location: ../index.php");
                 exit();
             } else {
                 $errorMessage = "Error: " . mysqli_error($mysqli);

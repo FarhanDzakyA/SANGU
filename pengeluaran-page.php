@@ -131,7 +131,7 @@
                     </button>
 
                     <!-- Current Page Indication -->
-                    <a class="nav-link d-flex align-items-center" href="pengeluaran-page.php">
+                    <a class="nav-link d-sm-flex d-none align-items-center" href="pengeluaran-page.php">
                         <i class="fa-solid fa-fw fa-money-bill-transfer mr-2" style="color: #6e707e"></i>
                         <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Pengeluaran</h4>
                     </a>
@@ -162,13 +162,13 @@
                     <!-- Tabel Card -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <div class="d-sm-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center justify-content-between">
                                 <h5 class="m-0 font-weight-bold text-primary">
                                     Data Pengeluaran
                                 </h5>
-                                <a class="d-none d-sm-inline-block btn btn-sm btn-primary rounded-pill shadow-sm" href="tambahpengeluaran.php">
-                                    <i class="fas fa-plus fa-sm text-white-100 mr-2"></i>
-                                    Tambah Data
+                                <a class="d-inline btn btn-sm btn-primary rounded-pill shadow-sm" href="tambahpengeluaran.php">
+                                    <i class="fas fa-plus fa-sm text-white-100 d-sm-mr-2"></i>
+                                    <span class="d-sm-inline d-none">Tambah data</span>
                                 </a>
                             </div>
                         </div>
@@ -227,7 +227,7 @@
                                                                 Cancel
                                                             </button>
                                                             <button type="submit" name="btn-hapus" class="btn btn-danger">
-                                                                Ya, Hapus Dompet
+                                                                Ya, Hapus Data
                                                             </button>
                                                         </div>
                                                     </form>
@@ -305,7 +305,7 @@
     <script src="Assets/js/dataTables.bootstrap4.min.js"></script>
 
     <!-- Page level custom scripts -->
-    <script src="Assets/js/demo/datatables-demo.js"></script>
+    <script src="Assets/js/datatables-demo.js"></script>
 </body>
 </html>
 

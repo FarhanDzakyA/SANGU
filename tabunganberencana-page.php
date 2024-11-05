@@ -125,7 +125,7 @@
                     </button>
 
                     <!-- Current Page Indication -->
-                    <a class="nav-link d-flex align-items-center" href="tabunganberencana-page.php">
+                    <a class="nav-link d-sm-flex d-none align-items-center" href="tabunganberencana-page.php">
                         <i class="fa-solid fa-fw fa-piggy-bank mr-2" style="color: #6e707e"></i>
                         <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Tabungan Berencana</h4>
                     </a>
@@ -156,13 +156,13 @@
                     <!-- Tabel Card -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <div class="d-sm-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center justify-content-between">
                                 <h5 class="m-0 font-weight-bold text-primary">
                                     Data Rencana Tabungan
                                 </h5>
-                                <a class="d-none d-sm-inline-block btn btn-sm btn-primary rounded-pill shadow-sm" href="tambah-rencana.php">
-                                    <i class="fas fa-plus fa-sm text-white-100 mr-2"></i>
-                                    Tambah Rencana
+                                <a class="d-inline btn btn-sm btn-primary rounded-pill shadow-sm" href="tambah-rencana.php">
+                                    <i class="fas fa-plus fa-sm text-white-100 d-sm-mr-2"></i>
+                                    <span class="d-sm-inline d-none">Tambah data</span>
                                 </a>
                             </div>
                             </div>

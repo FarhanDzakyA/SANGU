@@ -84,7 +84,7 @@
                                     </form>
                                     <hr>
                                     <div class="text-center">
-                                        <a class="small text-decoration-none" href="login-page.php">Already have an account? Login!</a>
+                                        <a class="small text-decoration-none" href="index.php">Already have an account? Login!</a>
                                     </div>
                                 </div>
                             </div>

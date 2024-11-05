@@ -170,6 +170,14 @@
     <!-- Custom styles for this template-->
     <link href="Assets/css/sb-admin-2.min.css" rel="stylesheet">
     <link href="Assets/css/styles.css" rel="stylesheet">
+
+    <style>
+        @media (min-width: 576px) {
+            .custome-width {
+                max-width: 100px;
+            }
+        }
+    </style>
 </head>
 <body id="page-top">
     <!-- Wrapper -->
@@ -259,7 +267,7 @@
                     </button>
 
                     <!-- Current Page Indication -->
-                    <a class="nav-link d-flex align-items-center" href="dashboard.php">
+                    <a class="nav-link d-sm-flex d-none align-items-center" href="dashboard.php">
                         <i class="fa-solid fa-fw fa-house mr-2" style="color: #6e707e"></i>
                         <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Dashboard</h4>
                     </a>
@@ -439,8 +447,8 @@
                         <div class="card-body">
                             <p class="card-text">Filter Data <i class="fas fa-star-of-life" style="font-size: 7px; vertical-align: top; color: #ED2939"></i></p>
                             <form method="GET" action="">
-                                <div class="d-flex align-items-center">
-                                    <div class="form-group mr-3">
+                                <div class="d-sm-flex align-items-center">
+                                    <div class="mr-sm-3 mb-sm-0 mb-3">
                                         <select name="bulan" class="form-select form-control">
                                             <option value="" selected disabled>-- Pilih Bulan --</option>
                                             <option value="January">Januari</option>
@@ -457,7 +465,7 @@
                                             <option value="December">Desember</option>
                                         </select>
                                     </div>
-                                    <div class="form-group mr-3">
+                                    <div class="mr-sm-3 mb-sm-0 mb-3">
                                         <select name="tahun" class="form-select form-control" required>
                                             <option value=""  selected disabled>-- Pilih Tahun --</option>
                                             <?php while($row = $years_result->fetch_assoc()): ?>
@@ -465,7 +473,7 @@
                                             <?php endwhile; ?>
                                         </select>
                                     </div>
-                                    <button type="submit" class="btn btn-primary rounded-pill" name="btn-show" style="margin-top: -15px">Tampilkan</button>
+                                    <button type="submit" class="btn btn-primary rounded-pill w-100 w-small-auto custome-width" name="btn-show">Tampilkan</button>
                                 </div>
                             </form>
                         </div>

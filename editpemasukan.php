@@ -117,14 +117,12 @@
             <div id="content">
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <form class="form-inline">
-                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                            <i class="fa-solid fa-bars"></i>
-                        </button>
-                    </form>
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
 
                     <!-- Current Page Indication -->
-                    <div class="d-flex align-items-center">
+                    <div class="d-sm-flex d-none align-items-center">
                         <a class="nav-link d-flex align-items-center" href="pemasukan-page.php">
                             <i class="fa-solid fa-fw fa-money-check-dollar mr-2" style="color: #6e707e"></i>
                             <h4 class="h4 mb-0 text-gray-700 font-weight-bold">Pemasukan</h4>
@@ -313,6 +311,13 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const sidebar = document.getElementById('accordionSidebar');
+            if (!sidebar.classList.contains('toggled')) {
+                sidebar.classList.add('toggled');
+            }
+        });
+
         function formatRupiah(input) {
             let value = input.value.replace(/[^\d]/g, '');
 

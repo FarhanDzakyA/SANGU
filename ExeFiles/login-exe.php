@@ -24,13 +24,13 @@
                 } else {
                     $_SESSION['invalidLogin'] = true;
 
-                    header("Location: ../login-page.php");
+                    header("Location: ../index.php");
                     exit();
                 }
             } else {
                 $_SESSION['invalidLogin'] = true;
 
-                header("Location: ../login-page.php");
+                header("Location: ../index.php");
                 exit();
             }
         } else {

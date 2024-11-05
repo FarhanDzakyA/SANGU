@@ -116,7 +116,7 @@
                     </button>
 
                     <!-- Current Page Indication -->
-                    <div class="d-flex align-items-center">
+                    <div class="d-sm-flex d-none align-items-center">
                         <a class="nav-link d-flex align-items-center" href="pengeluaran-page.php">
                             <i class="fa-solid fa-fw fa-money-bill-transfer mr-2" style="color: #6e707e"></i>
                             <h4 class="h4 mb-0 text-gray-700 font-weight-bold"> Pengeluaran</h4>
@@ -332,6 +332,13 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const sidebar = document.getElementById('accordionSidebar');
+            if (!sidebar.classList.contains('toggled')) {
+                sidebar.classList.add('toggled');
+            }
+        });
+
         function formatRupiah(input) {
             let value = input.value.replace(/[^\d]/g, '');
 
